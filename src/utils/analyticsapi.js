@@ -2,10 +2,6 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-multi-assign */
 const generateAnalyticsDataFromOrders = (ordersJson) => {
-  console.log(
-    "generateAnalyticsDataFromOrders generateAnalyticsDataFromOrders generateAnalyticsDataFromOrders"
-  );
-  console.log(ordersJson);
   const currentYearOrderData = {
     Jan: [],
     Feb: [],
@@ -54,12 +50,10 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
 
   const priorCustomersOrders = [];
   let priorProductDataList = [];
-
-  // for (const each in ordersJson) {
-  for (const index in ordersJson) {
-    const orderItem = ordersJson[index];
-    const orderDate = ordersJson[index].createdDate;
-    console.log(orderItem);
+  console.log(ordersJson);
+  for (const each in ordersJson) {
+    const orderItem = ordersJson[each];
+    const orderDate = new Date(ordersJson[each].createdDate);
     // Date to filter orders for Customer / Products
     const filterDate = new Date(Date.now());
     filterDate.setFullYear(filterDate.getFullYear() - 1);
@@ -72,7 +66,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
       if (orderDate)
         // Product Analytics Data
         try {
-          const order = ordersJson[index];
+          const order = ordersJson[each];
           const { items } = order.requestPayload.items;
           for (const OrderItemListIndex in items) {
             const currentProduct = items[OrderItemListIndex];
@@ -149,7 +143,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
 
       // Customer Analytics Data
       try {
-        const order = ordersJson[index];
+        const order = ordersJson[each];
         const filteredCustomerOrders = customersOrders.filter(
           (customer) => customer.CustomerID === order.requestPayload.destination.CustomerID
         );
@@ -271,7 +265,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
       if (orderDate)
         // Product Analytics Data
         try {
-          const order = ordersJson[index];
+          const order = ordersJson[each];
           const { items } = order.requestPayload.items;
           for (const OrderItemListIndex in items) {
             const currentProduct = items[OrderItemListIndex];
@@ -348,7 +342,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
 
       // Customer Analytics Data
       try {
-        const order = ordersJson[index];
+        const order = ordersJson[each];
         const filteredCustomerOrders = priorCustomersOrders.filter(
           (customer) => customer.CustomerID === order.requestPayload.destination.CustomerID
         );
@@ -452,7 +446,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
     const Year3PriorDate = new Date(Date.now());
     Year3PriorDate.setFullYear(Year3PriorDate.getFullYear() - 3);
 
-    const orderMonth = new Date(orderDate).getMonth();
+    const orderMonth = orderDate.getMonth();
 
     if (orderDate > Year1PriorDate) {
       switch (orderMonth) {
@@ -635,4 +629,5 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
 
   return responseData;
 };
+
 export default generateAnalyticsDataFromOrders;

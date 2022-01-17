@@ -25,99 +25,75 @@ Coded by www.creative-tim.com
 // };
 
 const formatCustomerRevenueData = (customerOrderData) => {
-  const customerOrderTotalData = [];
-  const currentYearOrderData = {
-    Jan: [],
-    Feb: [],
-    Mar: [],
-    Apr: [],
-    May: [],
-    Jun: [],
-    Jul: [],
-    Aug: [],
-    Sep: [],
-    Oct: [],
-    Nov: [],
-    Dec: [],
-  };
   // const data = analyticsData.customerData;
   // data.sort((a, b) => a.TotalAmountPurchased < b.TotalAmountPurchased);
-  const labels = Object.keys(currentYearOrderData);
   const Year1PriorDate = new Date(Date.now());
   Year1PriorDate.setFullYear(Year1PriorDate.getFullYear() - 1);
-  customerOrderData.map((order) => {
-    const orderMonth = new Date(order.createdDate).getMonth();
-    if (new Date(order.createdDate) > Year1PriorDate) {
-      switch (orderMonth) {
-        case 0:
-          currentYearOrderData.Jan.push(order);
-          break;
-        case 1:
-          currentYearOrderData.Feb.push(order);
-          break;
-        case 2:
-          currentYearOrderData.Mar.push(order);
-          break;
-        case 3:
-          currentYearOrderData.Apr.push(order);
-          break;
-        case 4:
-          currentYearOrderData.May.push(order);
-          break;
-        case 5:
-          currentYearOrderData.Jun.push(order);
-          break;
-        case 6:
-          currentYearOrderData.Jul.push(order);
-          break;
-        case 7:
-          currentYearOrderData.Aug.push(order);
-          break;
-        case 8:
-          currentYearOrderData.Sep.push(order);
-          break;
-        case 9:
-          currentYearOrderData.Oct.push(order);
-          break;
-        case 10:
-          currentYearOrderData.Nov.push(order);
-          break;
-        case 11:
-          currentYearOrderData.Dec.push(order);
-          break;
-        default:
-          break;
-      }
-    }
-    return order;
-  });
-  const revenueTotalsArray = [];
-  labels.map((label) => {
-    const monthlySalesData = currentYearOrderData[label];
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const tmpDateObj = new Date();
+  tmpDateObj.setDate(1);
+  const responseLabels = [];
+  const responseValues = [];
+  for (const month in monthNames) {
+    const currentMonthLabel = `${monthNames[tmpDateObj.getMonth()]} ${tmpDateObj.getFullYear()}`;
+    console.log(currentMonthLabel);
+    const MonthToSearch = tmpDateObj;
+    const MonthOrdersArray = [];
     let MonthlyOrderTotal = 0;
-    // eslint-disable-next-line no-restricted-syntax
-    for (const orderIndex in monthlySalesData) {
-      const tmpOrder = monthlySalesData[orderIndex];
-      // console.log("TEMP ORDER");
-      // console.log(tmpOrder);
-      // eslint-disable-next-line no-restricted-syntax
-      for (const orderItemIndex in tmpOrder.order.items.items) {
-        const OrderItem = tmpOrder.order.items.items[orderItemIndex];
-        // console.log(OrderItem);
-        try {
-          const RealPriceAmount = Number(OrderItem.PricePerGal) * Number(OrderItem.Quantity);
-          MonthlyOrderTotal += RealPriceAmount;
-        } catch (Error) {
-          // console.log(Error);
-        }
+
+    customerOrderData.map((order) => {
+      const orderMonth = new Date(order.createdDate).getMonth();
+      if (new Date(order.createdDate) > MonthToSearch && orderMonth === tmpDateObj.getMonth()) {
+        MonthOrdersArray.push(order);
+        const tmpOrder = order;
+        // console.log("TEMP ORDER");
+        // console.log(tmpOrder);
+        // eslint-disable-next-line no-restricted-syntax
+        tmpOrder.order.items.items.map((OrderItem) => {
+          try {
+            const RealPriceAmount = Number(OrderItem.PricePerGal) * Number(OrderItem.Quantity);
+            MonthlyOrderTotal += RealPriceAmount;
+          } catch (Error) {
+            // console.log(Error);
+          }
+          return OrderItem;
+        });
       }
-    }
-    revenueTotalsArray.push(MonthlyOrderTotal);
-    return label;
-  });
+      return order;
+    });
+    responseLabels.push(currentMonthLabel);
+    responseValues.push(MonthlyOrderTotal);
+    tmpDateObj.setMonth(tmpDateObj.getMonth() - 1);
+  }
+
+  console.log(responseLabels);
+  console.log(responseValues);
+  // Turn 2 arrays into a single object
+  const combineArrays = (first, second) =>
+    first.reduce((acc, val, ind) => {
+      acc[val] = second[ind];
+      return acc;
+    }, {});
+  console.log(combineArrays(responseLabels, responseValues));
   return {
-    labels,
-    datasets: [{ label: "Montly Order Totals", data: revenueTotalsArray }],
+    responseLabels,
+    datasets: [
+      { label: "Montly Order Totals", data: combineArrays(responseLabels, responseValues) },
+    ],
   };
 
   // for (const customerDataIndex in top6Customers) {

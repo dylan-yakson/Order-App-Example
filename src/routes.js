@@ -40,11 +40,12 @@ Coded by www.creative-tim.com
 // import Analytics from "layouts/pages/dashboards/analytics";
 import Sales from "layouts/pages/dashboards/sales";
 import Dispatch from "layouts/pages/dashboards/dispatch";
-import Announcements from "layouts/pages/profile/profile-overview";
+import Announcements from "layouts/pages/profile/announcements";
 import HelpPage from "layouts/pages/profile/help";
 
-// import AllProjects from "layouts/pages/profile/all-projects";
-import NewUser from "layouts/pages/users/new-user";
+// import NewUser from "layouts/pages/users/new-user";
+// import NewCustomer from "layouts/pages/customers/new-customer";
+import NewCustomerAddress from "layouts/pages/customers/new-customer-address";
 import Settings from "layouts/pages/account/settings";
 // import Billing from "layouts/pages/account/billing";
 // import Invoice from "layouts/pages/account/invoice";
@@ -111,7 +112,7 @@ const routes = [
       {
         name: "Announcements",
         key: "announcements",
-        route: "/pages/profile/profile-overview",
+        route: "/announcements",
         component: <Announcements />,
       },
       {
@@ -120,12 +121,12 @@ const routes = [
         route: "/pages/account/settings",
         component: <Settings />,
       },
-      {
-        name: "Logout",
-        key: "logout",
-        route: "/authentication/sign-in",
-        component: <SignInBasic />,
-      },
+      // {
+      //   name: "Logout",
+      //   key: "logout",
+      //   route: "/authentication/sign-in",
+      //   component: <SignInBasic />,
+      // },
       {
         name: "Help Desk",
         key: "helpmeh",
@@ -168,11 +169,17 @@ const routes = [
     key: "customers",
     icon: <Icon fontSize="medium">dashboard</Icon>,
     collapse: [
+      // {
+      //   name: "New Customer",
+      //   key: "new-customer",
+      //   route: "/customers/new-customer",
+      //   component: <NewCustomer />,
+      // },
       {
-        name: "New Customer",
-        key: "new-customer",
-        route: "/customers/new-customer",
-        component: <NewUser />,
+        name: "New Address",
+        key: "new-customer-address",
+        route: "/customers/new-customer-address",
+        component: <NewCustomerAddress />,
       },
       {
         name: "View Customers",

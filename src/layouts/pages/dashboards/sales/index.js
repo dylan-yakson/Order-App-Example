@@ -58,7 +58,7 @@ import { useMsal, useMsalAuthentication } from "@azure/msal-react";
 import PieChart from "examples/Charts/PieChart";
 
 // API & Data Functions
-import { pullMonthlySalesAnalytics, pullWarehouseOrders } from "utils/koapi";
+import { pullMonthlySalesAnalytics, pullWarehouseOrders, pullFuelOrders } from "utils/koapi";
 import generateAnalyticsDataFromOrders from "utils/analyticsapi";
 import formatRevenueChartData from "layouts/pages/dashboards/sales/data/revenueChartData";
 import formatCustomerBreakdownData from "layouts/pages/dashboards/sales/data/customerBreakdownChartData";
@@ -116,17 +116,85 @@ function Sales() {
     console.log(username);
     console.log(accounts[0]);
     // Not working for some reason
-    // pullWarehouseOrders(username).then((response) => {
-    //   console.log(response);
-    //   const analyticsData = generateAnalyticsDataFromOrders(response);
+    const WarehouseOrders = pullWarehouseOrders(username).then((warehouseOrders) => {
+      setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
+
+      const formattedOrderAnalyticsData = generateAnalyticsDataFromOrders(warehouseOrders);
+      console.log(formattedOrderAnalyticsData);
+      setAnalyticalData(formattedOrderAnalyticsData);
+      const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(
+        formattedOrderAnalyticsData
+      );
+      setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
+
+      const tmpTopProductsChartData = formatTopProductsData(formattedOrderAnalyticsData);
+      setTopProductsChartData(tmpTopProductsChartData);
+
+      // get Order Quantity Difference
+      const orderQuantityDifferenceLabel = getOrderQuantityDifferences(formattedOrderAnalyticsData);
+      setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
+
+      const revenueDifferenceLabel = getRevenueDifferences(formattedOrderAnalyticsData);
+      setrevenueDifferenceObj(revenueDifferenceLabel);
+
+      const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(
+        formattedOrderAnalyticsData
+      );
+      setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
+
+      const tmpTopCustomersChartData = formatTopCustomersChartData(formattedOrderAnalyticsData);
+      setTopCustomersChartData(tmpTopCustomersChartData);
+
+      const tmpCalendarEventData = formatCalendarEventData(formattedOrderAnalyticsData);
+      setCalendarEventData(tmpCalendarEventData);
+    });
+
+    const fuelOrders = pullFuelOrders(username).then((warehouseOrders) => {
+      setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
+
+      const formattedOrderAnalyticsData = generateAnalyticsDataFromOrders(warehouseOrders);
+      console.log(formattedOrderAnalyticsData);
+      setAnalyticalData(formattedOrderAnalyticsData);
+      const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(
+        formattedOrderAnalyticsData
+      );
+      setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
+
+      const tmpTopProductsChartData = formatTopProductsData(formattedOrderAnalyticsData);
+      setTopProductsChartData(tmpTopProductsChartData);
+
+      // get Order Quantity Difference
+      const orderQuantityDifferenceLabel = getOrderQuantityDifferences(formattedOrderAnalyticsData);
+      setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
+
+      const revenueDifferenceLabel = getRevenueDifferences(formattedOrderAnalyticsData);
+      setrevenueDifferenceObj(revenueDifferenceLabel);
+
+      const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(
+        formattedOrderAnalyticsData
+      );
+      setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
+
+      const tmpTopCustomersChartData = formatTopCustomersChartData(formattedOrderAnalyticsData);
+      setTopCustomersChartData(tmpTopCustomersChartData);
+
+      const tmpCalendarEventData = formatCalendarEventData(formattedOrderAnalyticsData);
+      setCalendarEventData(tmpCalendarEventData);
+    });
+    // pullMonthlySalesAnalytics(username).then((analyticsData) => {
     //   console.log(analyticsData);
     //   setAnalyticalData(analyticsData);
-
     //   // Configure Revenue Dataset
     //   const tmpDataset = [];
     //   console.log(analyticsData);
-    //   const revenueTableData = formatRevenueChartData(analyticsData);
-    //   setmonthlyRevenueChartData(revenueTableData);
+    //   // const revenueTableData = formatRevenueChartData(analyticsData);
+    //   // setmonthlyRevenueChartData(revenueTableData);
+
+    //   const WarehouseOrders = pullWarehouseOrders(username).then((warehouseOrders) => {
+    //     setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
+
+    //     const formattedOrderAnalyticsData = generateAnalyticsDataFromOrders(warehouseOrders);
+    //   });
 
     //   const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(analyticsData);
     //   setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
@@ -150,37 +218,6 @@ function Sales() {
     //   const tmpCalendarEventData = formatCalendarEventData(analyticsData);
     //   setCalendarEventData(tmpCalendarEventData);
     // });
-    pullMonthlySalesAnalytics(username).then((analyticsData) => {
-      console.log(analyticsData);
-      setAnalyticalData(analyticsData);
-      // Configure Revenue Dataset
-      const tmpDataset = [];
-      console.log(analyticsData);
-      const revenueTableData = formatRevenueChartData(analyticsData);
-      setmonthlyRevenueChartData(revenueTableData);
-
-      const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(analyticsData);
-      setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
-
-      const tmpTopProductsChartData = formatTopProductsData(analyticsData);
-      setTopProductsChartData(tmpTopProductsChartData);
-
-      // get Order Quantity Difference
-      const orderQuantityDifferenceLabel = getOrderQuantityDifferences(analyticsData);
-      setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
-
-      const revenueDifferenceLabel = getRevenueDifferences(analyticsData);
-      setrevenueDifferenceObj(revenueDifferenceLabel);
-
-      const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(analyticsData);
-      setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
-
-      const tmpTopCustomersChartData = formatTopCustomersChartData(analyticsData);
-      setTopCustomersChartData(tmpTopCustomersChartData);
-
-      const tmpCalendarEventData = formatCalendarEventData(analyticsData);
-      setCalendarEventData(tmpCalendarEventData);
-    });
   }, []);
   // Dropdown menu template for the DefaultStatisticsCard
   const renderMenu = (state, close) => (

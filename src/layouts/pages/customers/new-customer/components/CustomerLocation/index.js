@@ -40,6 +40,8 @@ import { useMsal } from "@azure/msal-react";
 // Formik
 import { useField, Field, Form, Formik, FormikProps, ErrorMessage } from "formik";
 
+import statesArray from "utils/staticData";
+
 function CustomerLocationInfo({ formData, customerAddresses }) {
   const [customerLocations, setcustomerLocations] = useState([]);
   const { accounts } = useMsal();

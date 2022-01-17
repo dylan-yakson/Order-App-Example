@@ -41,26 +41,27 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 // NewUser page components
-// import UserInfo from "layouts/pages/customers/new-customer/components/UserInfo";
-import CustomerInfo from "layouts/pages/customers/new-customer/components/Customers";
-import CustomerLocationInfo from "layouts/pages/customers/new-customer/components/CustomerLocation";
-import OrderInfo from "layouts/pages/customers/new-customer/components/OrderInfo";
-import ProductInfo from "layouts/pages/customers/new-customer/components/ProductInfo";
-import ConfirmationScreen from "layouts/pages/customers/new-customer/components/Confirmation";
-// import Address from "layouts/pages/customers/new-customer/components/Address";
-// import Socials from "layouts/pages/customers/new-customer/components/Socials";
-// import Profile from "layouts/pages/customers/new-customer/components/Profile";
+// import UserInfo from "layouts/pages/customers/new-customer-address/components/UserInfo";
+import CustomerInfo from "layouts/pages/customers/new-customer-address/components/Customers";
+import CustomerLocationInfo from "layouts/pages/customers/new-customer-address/components/CustomerLocation";
+import CustomerLocationContactInfo from "layouts/pages/customers/new-customer-address/components/CustomerLocationContactInfo";
+import OrderInfo from "layouts/pages/customers/new-customer-address/components/OrderInfo";
+import ProductInfo from "layouts/pages/customers/new-customer-address/components/ProductInfo";
+import ConfirmationScreen from "layouts/pages/customers/new-customer-address/components/Confirmation";
+// import Address from "layouts/pages/customers/new-customer-address/components/Address";
+// import Socials from "layouts/pages/customers/new-customer-address/components/Socials";
+// import Profile from "layouts/pages/customers/new-customer-address/components/Profile";
 
 // NewUser layout schemas for form and form feilds
-import validations from "layouts/pages/customers/new-customer/schemas/validations";
-import form from "layouts/pages/customers/new-customer/schemas/form";
-import initialValues from "layouts/pages/customers/new-customer/schemas/initialValues";
+import validations from "layouts/pages/customers/new-customer-address/schemas/validations";
+import form from "layouts/pages/customers/new-customer-address/schemas/form";
+import initialValues from "layouts/pages/customers/new-customer-address/schemas/initialValues";
 import { useMsal } from "@azure/msal-react";
 
 import { pullCustomerAddresses, convertOrderFormat, submitOrder, submitQuote } from "utils/koapi";
 
 function getSteps() {
-  return ["Order Info", "Customer Info", "Customer Address", "Pricing", "Confirmation"];
+  return ["Customer Info", "Customer Address", "Location Contact Info"];
 }
 
 function NewUser() {
@@ -91,56 +92,45 @@ function NewUser() {
 
   const sendOrderForProcessing = () => {
     if (stagedActions) {
-      if (stagedFormattedOrder.sales && stagedFormattedOrder.sales.quoteType === "Quote") {
-        submitQuote(stagedFormattedOrder, "fuel").then((orderSubmisionResponse) => {
-          console.log(orderSubmisionResponse);
-          stagedActions.setSubmitting(false);
-          stagedActions.resetForm();
-          stagedActions.setFieldValue("orderItems", []);
-          setActiveStep(0);
-        });
-      } else {
-        submitOrder(stagedFormattedOrder, "fuel").then((orderSubmisionResponse) => {
-          console.log(orderSubmisionResponse);
-          stagedActions.setSubmitting(false);
-          stagedActions.resetForm();
-          stagedActions.setFieldValue("orderItems", []);
-          setActiveStep(0);
-        });
-      }
+      // if (stagedFormattedOrder.sales && stagedFormattedOrder.sales.quoteType === "Quote") {
+      //   submitQuote(stagedFormattedOrder, "fuel").then((orderSubmisionResponse) => {
+      //     console.log(orderSubmisionResponse);
+      //     stagedActions.setSubmitting(false);
+      //     stagedActions.resetForm();
+      //     stagedActions.setFieldValue("orderItems", []);
+      //     setActiveStep(0);
+      //   });
+      // } else {
+      //   submitOrder(stagedFormattedOrder, "fuel").then((orderSubmisionResponse) => {
+      //     console.log(orderSubmisionResponse);
+      //     stagedActions.setSubmitting(false);
+      //     stagedActions.resetForm();
+      //     stagedActions.setFieldValue("orderItems", []);
+      //     setActiveStep(0);
+      //   });
+      // }
     }
   };
   const submitForm = async (values, actions) => {
     // await sleep(1000);
     // eslint-disable-next-line no-alert
     // Clear button components
-    await values.orderItems.map((item) => {
-      const responseObj = item;
-      try {
-        delete responseObj.EditBtn;
-      } catch (error) {
-        console.log("Error deleting item button", error);
-      }
-      return responseObj;
-    });
-    setStagedOrder(values);
-    setDialogOpen(true);
-    const formattedOrder = await convertOrderFormat(values);
-    setStagedFormattedOrder(formattedOrder);
-    console.log(values);
-    console.log(formattedOrder);
-    setStagedActions(actions);
-
-    // eslint-disable-next-line no-alert
-    // alert(
-    //   JSON.stringify(values, (key, value) => (value === null ? "" : value)),
-    //   2
-    // );
-    // // eslint-disable-next-line no-alert
-    // alert(
-    //   JSON.stringify(formattedOrder, (key, value) => (value === null ? "" : value)),
-    //   2
-    // );
+    // await values.orderItems.map((item) => {
+    //   const responseObj = item;
+    //   try {
+    //     delete responseObj.EditBtn;
+    //   } catch (error) {
+    //     console.log("Error deleting item button", error);
+    //   }
+    //   return responseObj;
+    // });
+    // setStagedOrder(values);
+    // setDialogOpen(true);
+    // const formattedOrder = await convertOrderFormat(values);
+    // setStagedFormattedOrder(formattedOrder);
+    // console.log(values);
+    // console.log(formattedOrder);
+    // setStagedActions(actions);
   };
 
   const handleSubmit = (values, actions) => {
@@ -159,14 +149,10 @@ function NewUser() {
         return <CustomerInfo formData={formData} customerAddresses={customerAddresses} />;
       case 1:
         // return <CustomerInfo formData={formData} customerAddresses={customerAddresses} />;
-        return <CustomerLocationInfo formData={formData} customerAddresses={customerAddresses} />; // <Socials formData={formData} />;
-      // case 2:
-      // return <CustomerLocationInfo formData={formData} customerAddresses={customerAddresses} />; // <Socials formData={formData} />;
-      // return <ProductInfo formData={formData} customerAddresses={customerAddresses} />;
-      // case 3:
-      // return <ProductInfo formData={formData} customerAddresses={customerAddresses} />; // <Profile formData={formData} />;
-      // case 4:
-      // return <ConfirmationScreen formData={formData} />; // <Profile formData={formData} />;
+        return <CustomerLocationInfo formData={formData} />; // <Socials formData={formData} />;
+      case 2:
+        // return <CustomerInfo formData={formData} customerAddresses={customerAddresses} />;
+        return <CustomerLocationContactInfo formData={formData} />;
       default:
         return null;
     }
@@ -190,7 +176,7 @@ function NewUser() {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            Are you sure you want to submit this order?
+            Are you sure you want to submit this request? Make sure the address is correct pleas
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
