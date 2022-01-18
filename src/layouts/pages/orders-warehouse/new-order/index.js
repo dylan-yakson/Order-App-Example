@@ -96,8 +96,8 @@ function NewOrder() {
 
   const sendOrderForProcessing = () => {
     if (stagedActions) {
+      setIsLoading(true);
       if (stagedFormattedOrder.sales && stagedFormattedOrder.sales.quoteType === "Quote") {
-        setIsLoading(true);
         submitQuote(stagedFormattedOrder, "warehouse").then((orderSubmisionResponse) => {
           console.log(orderSubmisionResponse);
           stagedActions.setSubmitting(false);

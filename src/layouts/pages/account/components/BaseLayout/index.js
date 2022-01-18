@@ -19,10 +19,10 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 // @mui material components
-import Grid from "@mui/material/Grid";
-import AppBar from "@mui/material/AppBar";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+// import Grid from "@mui/material/Grid";
+// import AppBar from "@mui/material/AppBar";
+// import Tabs from "@mui/material/Tabs";
+// import Tab from "@mui/material/Tab";
 
 // Material Dashboard 2 PRO React components
 import MDBox from "components/MDBox";
@@ -37,7 +37,7 @@ import Footer from "examples/Footer";
 
 function BaseLayout({ stickyNavbar, children }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
-  const [tabValue, setTabValue] = useState(0);
+  // const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     // A function that sets the orientation state of the tabs.
@@ -59,13 +59,13 @@ function BaseLayout({ stickyNavbar, children }) {
     return () => window.removeEventListener("resize", handleTabsOrientation);
   }, [tabsOrientation]);
 
-  const handleSetTabValue = (event, newValue) => setTabValue(newValue);
+  // const handleSetTabValue = (event, newValue) => setTabValue(newValue);
 
   return (
     <DashboardLayout>
       <DashboardNavbar absolute={!stickyNavbar} isMini />
       <MDBox mt={stickyNavbar ? 3 : 10}>
-        <Grid container>
+        {/* <Grid container>
           <Grid item xs={12} sm={8} lg={4}>
             <AppBar position="static">
               <Tabs orientation={tabsOrientation} value={tabValue} onChange={handleSetTabValue}>
@@ -76,7 +76,7 @@ function BaseLayout({ stickyNavbar, children }) {
               </Tabs>
             </AppBar>
           </Grid>
-        </Grid>
+        </Grid> */}
         {children}
       </MDBox>
       <Footer />

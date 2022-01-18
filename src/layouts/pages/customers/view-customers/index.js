@@ -15,7 +15,8 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useMemo, useState, useEffect, Link } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -64,8 +65,11 @@ import {
   pullWarehouseOrders,
   pullCustomerAddresses,
   pullWarehouseDispatchOrders,
+  sendOrderConfirmationEmail,
+  pullAllOrders,
 } from "utils/koapi";
-import generateAnalyticsDataFromOrders from "utils/analyticsapi";
+// import generateAnalyticsDataFromOrders from "utils/analyticsapi";
+import generateAnalyticsDataFromOrders from "utils/customerAnalyticsApi";
 import formatRevenueChartData from "layouts/pages/customers/view-customers/data/revenueChartData";
 // import generateDataTableFromOrders from "layouts/pages/orders-warehouse/view-orders/data/fuelOrderDataTable";
 import generateDataTableFromOrders from "layouts/pages/customers/view-customers/data/warehouseCustomerDataTable";
@@ -78,7 +82,11 @@ import formatTopCustomersChartData from "layouts/pages/customers/view-customers/
 import formatCalendarEventData from "layouts/pages/customers/view-customers/data/calendarOrderData";
 import Autocomplete from "@mui/material/Autocomplete";
 import MDInput from "components/MDInput";
-import EditOrder from "layouts/pages/orders-warehouse/edit-order";
+import EditWarehouseOrder from "layouts/pages/orders-warehouse/edit-order";
+import EditFuelOrder from "layouts/pages/orders-fuel/edit-order";
+
+import Invoice from "layouts/pages/orders-warehouse/invoice";
+import FuelInvoice from "layouts/pages/orders-fuel/invoice";
 
 import {
   getOrderQuantityDifferences,
@@ -110,7 +118,6 @@ function Sales() {
   const [SelectedCustomerOrders, SetSelectedCustomerOrders] = useState(null);
   const [CustomerOrderTableData, setCustomerOrderTableData] = useState(null);
   const [CustomerSelected, setCustomerSelected] = useState(null);
-  const [revenueDifferenceObj, setrevenueDifferenceObj] = useState(null);
   const [calendarEventData, setCalendarEventData] = useState(null);
   const [CalendarAlert, setCalendarAlert] = useState(null);
   const [selectedOrderForReview, setSelectedOrderForReview] = useState(null);
@@ -125,6 +132,9 @@ function Sales() {
   const [selectedOrderToReview, setSelectedOrderToReview] = useState(null);
   const [isEditingOrder, setisEditingOrder] = useState(null);
   const [isReviewingOrder, setisReviewingOrder] = useState(null);
+  const [isActiveResendEmailAlert, setResendEmailAlert] = useState(null);
+  const [emailToSendTo, setEmailToResendSendTo] = useState(null);
+  const [orderToEmail, setorderToEmail] = useState(null);
   // DefaultStatisticsCard handler for the dropdown action
   const openSalesDropdown = ({ currentTarget }) => setSalesDropdown(currentTarget);
   const closeSalesDropdown = ({ currentTarget }) => {
@@ -163,17 +173,46 @@ function Sales() {
     console.log(order);
     setSelectedOrderToReview(order);
     setisReviewingOrder(true);
-    setSelectedOrderForReview(order);
-    setSelectedOrderProducts(formatSelectedOrderProductData(order.order.items.items));
-    // const tmpTopProductsChartData = formatTopProductsData(customerSelected.products);
-    // setSelectedOrderProducts(tmpTopProductsChartData);
+  };
+  const submitOrderEmailResend = () => {
+    setIsLoading(true);
+    console.log(orderToEmail);
+    console.log(emailToSendTo);
+    let fuelOrWarehouse = "warehouse";
+    if (orderToEmail && orderToEmail.PO && orderToEmail.PO.includes("F")) {
+      fuelOrWarehouse = "fuel";
+    }
+    sendOrderConfirmationEmail(
+      accounts[0].username,
+      emailToSendTo,
+      fuelOrWarehouse,
+      orderToEmail.PO
+    ).then(() => {
+      setOrderStatusAlert(
+        <MDAlert color="success">
+          Order {orderToEmail.PO} Emailed to {emailToSendTo} succesfully.
+          <MDAlertCloseIcon
+            onClick={() => {
+              setOrderStatusAlert(null);
+            }}
+          >
+            &times;
+          </MDAlertCloseIcon>
+        </MDAlert>
+      );
+      setIsLoading(false);
+      setResendEmailAlert(false);
+    });
   };
   const resendEmailOrderFunction = (order) => {
     // eslint-disable-next-line no-alert
+    setResendEmailAlert(true);
+    setorderToEmail(order);
+    setSelectedOrderToReview(order);
     console.log(`Updating order ${order.PO}`);
     console.log(order);
+    console.log(emailToSendTo);
     // eslint-disable-next-line no-underscore-dangle
-    setisEditingOrder(true);
   };
   const handleSelectedCustomer = (customerSelect) => {
     const customerNameVal = customerSelect.target.value;
@@ -198,8 +237,8 @@ function Sales() {
         resendEmailOrderFunction
       );
       setCustomerOrderTableData(tableData);
-      const revenueDifferenceLabel = getRevenueDifferences(customerSelected.orders);
-      setrevenueDifferenceObj(revenueDifferenceLabel);
+      // const revenueDifferenceLabel = getRevenueDifferences(customerSelected.orders);
+      // setrevenueDifferenceObj(revenueDifferenceLabel);
       setSelectedOrderToReview(null);
       setSelectedOrderProducts(null);
     }
@@ -213,48 +252,173 @@ function Sales() {
     //   console.log(customers);
     //   setCustomerList(customers);
     // });
-    pullMonthlySalesAnalytics(username).then((analyticsData) => {
+    pullAllOrders(username).then((orders) => {
+      console.log(orders);
+      const analyticsData = generateAnalyticsDataFromOrders(orders);
       console.log(analyticsData);
       setAnalyticalData(analyticsData);
-      // Configure Revenue Dataset
-      const tmpDataset = [];
       console.log(analyticsData);
       setCustomerList(analyticsData.customerData);
-
-      // // get Order Quantity Difference
-      // const orderQuantityDifferenceLabel = getOrderQuantityDifferences(analyticsData);
-      // setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
-
-      // const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(analyticsData);
-      // setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
-
-      // const tmpTopCustomersChartData = formatTopCustomersChartData(analyticsData);
-      // setTopCustomersChartData(tmpTopCustomersChartData);
-
-      // const tmpCalendarEventData = formatCalendarEventData(analyticsData);
-      // setCalendarEventData(tmpCalendarEventData);
     });
+    // pullMonthlySalesAnalytics(username).then((analyticsData) => {
+    //   console.log(analyticsData);
+    //   setAnalyticalData(analyticsData);
+    //   // Configure Revenue Dataset
+    //   const tmpDataset = [];
+    //   console.log(analyticsData);
+    //   setCustomerList(analyticsData.customerData);
+    // });
   }, []);
-  // Dropdown menu template for the DefaultStatisticsCard
-  const renderMenu = (state, close) => (
-    <></>
-    // <Menu
-    //   anchorEl={state}
-    //   transformOrigin={{ vertical: "top", horizontal: "center" }}
-    //   open={Boolean(state)}
-    //   onClose={close}
-    //   keepMounted
-    //   disableAutoFocusItem
-    // >
-    //   <MenuItem onClick={close}>Weekly</MenuItem>
-    //   <MenuItem onClick={close}>Monthly</MenuItem>
-    //   <MenuItem onClick={close}>Yearly</MenuItem>
-    // </Menu>
-  );
 
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
+          <CircularProgress center />
+        </MDBox>
+      </DashboardLayout>
+    );
+  }
+
+  if (isReviewingOrder) {
+    return (
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox>
+          <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
+            <MDBox>
+              <MDButton
+                variant="outlined"
+                color="dark"
+                onClick={() => {
+                  setisReviewingOrder(false);
+                }}
+              >
+                <Link to="/customers/view-customer">Back</Link>
+              </MDButton>
+              <MDButton
+                variant="outlined"
+                color="dark"
+                onClick={() => {
+                  setisReviewingOrder(false);
+                  updateOrderFunction(selectedOrderToReview);
+                }}
+              >
+                Edit Order
+              </MDButton>
+              <MDButton
+                variant="outlined"
+                color="dark"
+                onClick={() => {
+                  setisReviewingOrder(false);
+                  setResendEmailAlert(true);
+                  setorderToEmail(selectedOrderToReview);
+                }}
+              >
+                Email Order
+              </MDButton>
+            </MDBox>
+          </MDBox>
+          <Invoice
+            OrderData={selectedOrderToReview.requestPayload}
+            po={selectedOrderToReview.PO}
+            orderDate={selectedOrderToReview.createdDate}
+          />
+        </MDBox>
+      </DashboardLayout>
+    );
+  }
+
+  if (isActiveResendEmailAlert) {
+    return (
+      <DashboardLayout>
+        <MDButton
+          variant="outlined"
+          color="dark"
+          onClick={() => {
+            setisReviewingOrder(false);
+            setResendEmailAlert(false);
+          }}
+        >
+          <Link to="/customers/view-customer">Back</Link>
+        </MDButton>
+        <DashboardNavbar />
+        <MDBox>
+          <Grid
+            container
+            spacing={3}
+            align="center"
+            justify="center"
+            alignItems="center"
+            margin="30px"
+          >
+            <Grid item xs={12}>
+              <MDInput
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Email Address"
+                type="email"
+                fullWidth
+                variant="standard"
+                onChange={(e) => {
+                  setEmailToResendSendTo(e.target.value);
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <MDButton center color="success" variant="contained" onClick={submitOrderEmailResend}>
+                Submit
+              </MDButton>
+            </Grid>
+          </Grid>
+        </MDBox>
+        <MDBox>
+          <Invoice
+            OrderData={selectedOrderToReview.requestPayload}
+            po={selectedOrderToReview.PO}
+            orderDate={selectedOrderToReview.createdDate}
+          />
+        </MDBox>
+      </DashboardLayout>
+    );
+  }
+  if (isEditingOrder && selectedOrderToEdit) {
+    return (
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox py={3}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              {selectedOrderToEdit &&
+              selectedOrderToEdit.PO &&
+              selectedOrderToEdit.PO.includes("F") ? (
+                <EditFuelOrder
+                  OrderToEdit={selectedOrderToEdit}
+                  onOrderCompletion={() => setisEditingOrder(false)}
+                  alertFunction={setOrderStatusAlert}
+                />
+              ) : (
+                <EditWarehouseOrder
+                  OrderToEdit={selectedOrderToEdit}
+                  onOrderCompletion={() => setisEditingOrder(false)}
+                  alertFunction={setOrderStatusAlert}
+                />
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <Footer padding="30px" margin="30px" />
+            </Grid>
+          </Grid>
+        </MDBox>
+      </DashboardLayout>
+    );
+  }
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      {OrderStatusAlert}
       <MDBox py={3}>
         <MDBox mb={3}>
           <Grid container spacing={3}>
@@ -296,26 +460,6 @@ function Sales() {
             </Grid>
             <Grid item xs={12} sm={4}>
               <></>
-              {/* {OrderQuantityDifferenceObj ? (
-                <DefaultStatisticsCard
-                  title="order quantity"
-                  count={analyticalData.monthlySummary.currentYear.totalOrders}
-                  percentage={{
-                    color: OrderQuantityDifferenceObj.color,
-                    value: OrderQuantityDifferenceObj.label, // "+12",
-                    label: `since last month (${analyticalData.monthlySummary.oneYearPrior.totalOrders})`,
-                  }}
-                  dropdown={{
-                    action: openRevenueDropdown,
-                    menu: renderMenu(revenueDropdown, closeRevenueDropdown),
-                    value: revenueDropdownValue,
-                  }}
-                />
-              ) : (
-                <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
-                  <CircularProgress center />
-                </MDBox>
-              )} */}
             </Grid>
           </Grid>
         </MDBox>

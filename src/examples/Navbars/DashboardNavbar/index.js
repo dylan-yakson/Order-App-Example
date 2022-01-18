@@ -174,6 +174,20 @@ function DashboardNavbar({ absolute, light, isMini }) {
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
             <MDBox color={light ? "white" : "inherit"}>
               <IconButton
+                size="small"
+                disableRipple
+                color="inherit"
+                sx={navbarMobileMenu}
+                onClick={handleMiniSidenav}
+              >
+                <Icon sx={iconsStyle} fontSize="large">
+                  {miniSidenav ? "menu_open" : "menu"}
+                </Icon>
+              </IconButton>
+            </MDBox>
+            <MDBox>
+              <IconButton
+                size="small"
                 disableRipple
                 sx={navbarIconButton}
                 aria-controls="notification-menu"
@@ -184,18 +198,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 <Icon sx={iconsStyle}>account_circle</Icon>
               </IconButton>
               {renderAccountMenu()}
-
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                sx={navbarMobileMenu}
-                onClick={handleMiniSidenav}
-              >
-                <Icon sx={iconsStyle} fontSize="medium">
-                  {miniSidenav ? "menu_open" : "menu"}
-                </Icon>
-              </IconButton>
               <IconButton
                 size="small"
                 disableRipple

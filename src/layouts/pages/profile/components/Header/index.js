@@ -21,10 +21,10 @@ import PropTypes from "prop-types";
 // @mui material components
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
-import AppBar from "@mui/material/AppBar";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Icon from "@mui/material/Icon";
+// import AppBar from "@mui/material/AppBar";
+// import Tabs from "@mui/material/Tabs";
+// import Tab from "@mui/material/Tab";
+// import Icon from "@mui/material/Icon";
 
 // Material Dashboard 2 PRO React components
 import MDBox from "components/MDBox";
@@ -41,7 +41,7 @@ import { useMsal, useAccount } from "@azure/msal-react";
 
 function Header({ children }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
-  const [tabValue, setTabValue] = useState(0);
+  // const [tabValue, setTabValue] = useState(0);
   const { instance, accounts } = useMsal();
   const account = useAccount(accounts[0] || {});
 
@@ -68,7 +68,7 @@ function Header({ children }) {
     console.log(account);
     console.log(instance);
   }, []);
-  const handleSetTabValue = (event, newValue) => setTabValue(newValue);
+  // const handleSetTabValue = (event, newValue) => setTabValue(newValue);
 
   return (
     <MDBox position="relative" mb={5}>
@@ -112,7 +112,7 @@ function Header({ children }) {
               </MDTypography>
             </MDBox>
           </Grid>
-          <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
+          {/* <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
             <AppBar position="static">
               <Tabs orientation={tabsOrientation} value={tabValue} onChange={handleSetTabValue}>
                 <Tab
@@ -141,7 +141,7 @@ function Header({ children }) {
                 />
               </Tabs>
             </AppBar>
-          </Grid>
+          </Grid> */}
         </Grid>
         {children}
       </Card>

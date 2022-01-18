@@ -29,6 +29,9 @@ import CircularProgress from "@mui/material/CircularProgress";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
+import MDAlert from "components/MDAlert";
+import MDAlertCloseIcon from "components/MDAlert/MDAlertCloseIcon";
 
 // Material Dashboard 2 PRO React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -36,7 +39,6 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import { Link } from "react-router-dom";
-
 // Data
 import { useMsal, useMsalAuthentication } from "@azure/msal-react";
 import generateDataTableFromOrders from "layouts/pages/orders-fuel/view-quotes/data/fuelOrderDataTable";
@@ -46,12 +48,11 @@ import Invoice from "layouts/pages/orders-fuel/invoice";
 import {
   pullCustomerAddresses,
   pullWarehouseQuotes,
-  pullFuelQuotes,
   pullPreviousPrices,
   pullProductPackages,
   pullProducts,
-  pullWarehouseDispatchOrders,
   pullOrderStatus,
+  pullFuelQuotes,
   sendQuoteConfirmationEmail,
 } from "utils/koapi";
 
@@ -59,6 +60,7 @@ function OrderList() {
   const { instance, accounts } = useMsal();
   const [menu, setMenu] = useState(null);
   const { login, result, error } = useMsalAuthentication("redirect");
+  const [isLoading, setIsLoading] = useState(false);
   const [orderData, setOrderData] = useState(null);
   const [OrderStatusAlert, setOrderStatusAlert] = useState(null);
   const [dispatchedOrders, setDispatchedOrders] = useState(null);
@@ -67,8 +69,9 @@ function OrderList() {
   const [selectedOrderToReview, setSelectedOrderToReview] = useState(null);
   const [isEditingOrder, setisEditingOrder] = useState(null);
   const [isReviewingOrder, setisReviewingOrder] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [isActiveResendEmailAlert, setResendEmailAlert] = useState(null);
+  const [emailToSendTo, setEmailToResendSendTo] = useState(null);
+  const [orderToEmail, setorderToEmail] = useState(null);
   // const { instance, accounts } = useMsal();
 
   const openMenu = (event) => setMenu(event.currentTarget);
@@ -89,15 +92,40 @@ function OrderList() {
     setSelectedOrderToReview(order);
     setisReviewingOrder(true);
   };
+  const submitOrderEmailResend = () => {
+    setIsLoading(true);
+    console.log(orderToEmail);
+    console.log(emailToSendTo);
+    sendQuoteConfirmationEmail(accounts[0].username, emailToSendTo, "fuel", orderToEmail.PO).then(
+      () => {
+        setOrderStatusAlert(
+          <MDAlert color="success">
+            Order {orderToEmail.PO} Emailed to {emailToSendTo} succesfully.
+            <MDAlertCloseIcon
+              onClick={() => {
+                setOrderStatusAlert(null);
+              }}
+            >
+              &times;
+            </MDAlertCloseIcon>
+          </MDAlert>
+        );
+        setIsLoading(false);
+        setResendEmailAlert(false);
+      }
+    );
+  };
   const resendEmailOrderFunction = (order) => {
-    const { username } = accounts[0];
     // eslint-disable-next-line no-alert
+    setResendEmailAlert(true);
+    setorderToEmail(order);
+    setSelectedOrderToReview(order);
     console.log(`Updating order ${order.PO}`);
     console.log(order);
-    sendQuoteConfirmationEmail(username, "dylan.jackson@kppetro.com", "fuel", order.PO);
+    console.log(emailToSendTo);
     // eslint-disable-next-line no-underscore-dangle
-    // setisEditingOrder(true);
   };
+
   const refreshButtonFunction = () => {
     setIsLoading(true);
     const { username } = accounts[0];
@@ -114,6 +142,7 @@ function OrderList() {
         );
         setOrderData(tableData);
         setIsLoading(false);
+        closeMenu();
         // pullOrderStatus(username).then((dispatchedOrdersStatus) => {
         //   console.log("Orders Statuses:");
         //   console.log(dispatchedOrdersStatus);
@@ -141,15 +170,14 @@ function OrderList() {
           resendEmailOrderFunction
         );
         setOrderData(tableData);
-        setIsLoading(false);
       }
     });
   };
   useEffect(() => {
-    setIsLoading(true);
     const { username } = accounts[0];
     console.log(username);
     console.log(accounts[0]);
+    setIsLoading(true);
     pullFuelQuotes(username).then((response) => {
       const orders = response;
       try {
@@ -161,6 +189,7 @@ function OrderList() {
         );
         setOrderData(tableData);
         setIsLoading(false);
+
         // pullOrderStatus(username).then((dispatchedOrdersStatus) => {
         //   console.log("Orders Statuses:");
         //   console.log(dispatchedOrdersStatus);
@@ -195,9 +224,12 @@ function OrderList() {
 
   if (isLoading) {
     return (
-      <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
-        <CircularProgress center />
-      </MDBox>
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
+          <CircularProgress center />
+        </MDBox>
+      </DashboardLayout>
     );
   }
   if (isReviewingOrder) {
@@ -231,13 +263,69 @@ function OrderList() {
                 color="dark"
                 onClick={() => {
                   setisReviewingOrder(false);
-                  updateOrderFunction(selectedOrderToReview);
+                  setResendEmailAlert(true);
+                  setorderToEmail(selectedOrderToReview);
                 }}
               >
                 Email Order
               </MDButton>
             </MDBox>
           </MDBox>
+          <Invoice
+            OrderData={selectedOrderToReview.requestPayload}
+            po={selectedOrderToReview.PO}
+            orderDate={selectedOrderToReview.createdDate}
+          />
+        </MDBox>
+      </DashboardLayout>
+    );
+  }
+  if (isActiveResendEmailAlert) {
+    return (
+      <DashboardLayout>
+        <MDButton
+          variant="outlined"
+          color="dark"
+          onClick={() => {
+            setisReviewingOrder(false);
+            setResendEmailAlert(false);
+          }}
+        >
+          <Link to="/orders/order-list-warehouse">Back</Link>
+        </MDButton>
+        <DashboardNavbar />
+        <MDBox>
+          <Grid
+            container
+            spacing={3}
+            align="center"
+            justify="center"
+            alignItems="center"
+            margin="30px"
+          >
+            <Grid item xs={12}>
+              <MDInput
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Email Address"
+                type="email"
+                fullWidth
+                variant="standard"
+                onChange={(e) => {
+                  console.log(e);
+                  setEmailToResendSendTo(e.target.value);
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <MDButton center color="success" variant="contained" onClick={submitOrderEmailResend}>
+                Submit
+              </MDButton>
+            </Grid>
+          </Grid>
+        </MDBox>
+        <MDBox>
           <Invoice
             OrderData={selectedOrderToReview.requestPayload}
             po={selectedOrderToReview.PO}
@@ -279,7 +367,7 @@ function OrderList() {
                 <MDBox ml={1}>
                   <MDButton variant="outlined" color="dark" onClick={refreshButtonFunction}>
                     <Icon>add</Icon>
-                    <Link to="/orders/new-order-fuel">&nbsp;New Order</Link>
+                    <Link to="/orders/new-order-warehouse">&nbsp;New Order</Link>
                   </MDButton>
                 </MDBox>
               </MDBox>

@@ -15,7 +15,7 @@ Coded by www.creative-tim.com
 
 /* eslint-disable react/prop-types */
 // ProductsList page components
-import IdCell from "layouts/pages/orders-warehouse/view-quotes/components/IdCell";
+// import IdCell from "layouts/pages/orders-warehouse/view-quotes/components/IdCell";
 import DefaultCell from "layouts/pages/orders-warehouse/view-quotes/components/DefaultCell";
 import MoneyCell from "layouts/pages/orders-warehouse/view-quotes/components/MoneyCell";
 import ActionCell from "layouts/pages/orders-warehouse/view-quotes/components/ActionCell";
@@ -52,11 +52,24 @@ const generateDataTableFromOrders = (
   console.log(FormattedOrders);
   const ReturnedTableData = {
     columns: [
+      {
+        Header: "edit",
+        accessor: "editButton",
+        Cell: ({ value }) => (
+          <ActionCell
+            value={value}
+            updateFunction={globalUpdateFunction}
+            emailFunction={globalEmailFunction}
+            reviewFunction={globalReviewFunction}
+            ordersList={orders}
+          />
+        ),
+      },
       // { Header: "id", accessor: "id", Cell: ({ value }) => <IdCell id={value} /> },
       {
         Header: "PO",
         accessor: "PO",
-        Cell: ({ value }) => <IdCell id={value} />,
+        Cell: ({ value }) => <DefaultCell value={value} />,
       },
 
       {
@@ -97,19 +110,6 @@ const generateDataTableFromOrders = (
       //   accessor: "orderStatus",
       //   Cell: ({ value }) => <OrderStatusCell value={value} />,
       // },
-      {
-        Header: "edit",
-        accessor: "editButton",
-        Cell: ({ value }) => (
-          <ActionCell
-            value={value}
-            updateFunction={globalUpdateFunction}
-            emailFunction={globalEmailFunction}
-            reviewFunction={globalReviewFunction}
-            ordersList={orders}
-          />
-        ),
-      },
     ],
 
     rows: FormattedOrders,

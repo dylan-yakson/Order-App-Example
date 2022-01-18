@@ -29,6 +29,9 @@ import CircularProgress from "@mui/material/CircularProgress";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
+import MDAlert from "components/MDAlert";
+import MDAlertCloseIcon from "components/MDAlert/MDAlertCloseIcon";
 
 // Material Dashboard 2 PRO React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -36,7 +39,6 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import { Link } from "react-router-dom";
-
 // Data
 import { useMsal, useMsalAuthentication } from "@azure/msal-react";
 import generateDataTableFromOrders from "layouts/pages/orders-warehouse/view-quotes/data/fuelOrderDataTable";
@@ -51,6 +53,7 @@ import {
   pullProducts,
   pullWarehouseDispatchOrders,
   pullOrderStatus,
+  sendQuoteConfirmationEmail,
 } from "utils/koapi";
 
 function OrderList() {
@@ -66,7 +69,9 @@ function OrderList() {
   const [selectedOrderToReview, setSelectedOrderToReview] = useState(null);
   const [isEditingOrder, setisEditingOrder] = useState(null);
   const [isReviewingOrder, setisReviewingOrder] = useState(null);
-
+  const [isActiveResendEmailAlert, setResendEmailAlert] = useState(null);
+  const [emailToSendTo, setEmailToResendSendTo] = useState(null);
+  const [orderToEmail, setorderToEmail] = useState(null);
   // const { instance, accounts } = useMsal();
 
   const openMenu = (event) => setMenu(event.currentTarget);
@@ -87,13 +92,43 @@ function OrderList() {
     setSelectedOrderToReview(order);
     setisReviewingOrder(true);
   };
+  const submitOrderEmailResend = () => {
+    setIsLoading(true);
+    console.log(orderToEmail);
+    console.log(emailToSendTo);
+    sendQuoteConfirmationEmail(
+      accounts[0].username,
+      emailToSendTo,
+      "warehouse",
+      orderToEmail.PO
+    ).then(() => {
+      setOrderStatusAlert(
+        <MDAlert color="success">
+          Order {orderToEmail.PO} Emailed to {emailToSendTo} succesfully.
+          <MDAlertCloseIcon
+            onClick={() => {
+              setOrderStatusAlert(null);
+            }}
+          >
+            &times;
+          </MDAlertCloseIcon>
+        </MDAlert>
+      );
+      setIsLoading(false);
+      setResendEmailAlert(false);
+    });
+  };
   const resendEmailOrderFunction = (order) => {
     // eslint-disable-next-line no-alert
+    setResendEmailAlert(true);
+    setorderToEmail(order);
+    setSelectedOrderToReview(order);
     console.log(`Updating order ${order.PO}`);
     console.log(order);
+    console.log(emailToSendTo);
     // eslint-disable-next-line no-underscore-dangle
-    setisEditingOrder(true);
   };
+
   const refreshButtonFunction = () => {
     setIsLoading(true);
     const { username } = accounts[0];
@@ -231,13 +266,69 @@ function OrderList() {
                 color="dark"
                 onClick={() => {
                   setisReviewingOrder(false);
-                  updateOrderFunction(selectedOrderToReview);
+                  setResendEmailAlert(true);
+                  setorderToEmail(selectedOrderToReview);
                 }}
               >
                 Email Order
               </MDButton>
             </MDBox>
           </MDBox>
+          <Invoice
+            OrderData={selectedOrderToReview.requestPayload}
+            po={selectedOrderToReview.PO}
+            orderDate={selectedOrderToReview.createdDate}
+          />
+        </MDBox>
+      </DashboardLayout>
+    );
+  }
+  if (isActiveResendEmailAlert) {
+    return (
+      <DashboardLayout>
+        <MDButton
+          variant="outlined"
+          color="dark"
+          onClick={() => {
+            setisReviewingOrder(false);
+            setResendEmailAlert(false);
+          }}
+        >
+          <Link to="/orders/order-list-warehouse">Back</Link>
+        </MDButton>
+        <DashboardNavbar />
+        <MDBox>
+          <Grid
+            container
+            spacing={3}
+            align="center"
+            justify="center"
+            alignItems="center"
+            margin="30px"
+          >
+            <Grid item xs={12}>
+              <MDInput
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Email Address"
+                type="email"
+                fullWidth
+                variant="standard"
+                onChange={(e) => {
+                  console.log(e);
+                  setEmailToResendSendTo(e.target.value);
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <MDButton center color="success" variant="contained" onClick={submitOrderEmailResend}>
+                Submit
+              </MDButton>
+            </Grid>
+          </Grid>
+        </MDBox>
+        <MDBox>
           <Invoice
             OrderData={selectedOrderToReview.requestPayload}
             po={selectedOrderToReview.PO}

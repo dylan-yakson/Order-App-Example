@@ -39,6 +39,36 @@ const getOrderQuantityDifferences = (analyticsData) => {
   }
   return { label: orderQuantityString, color: orderQuantityColor };
 };
+const getYearlyRevenue = (yearlySummaryData) => {
+  const monthlyData = yearlySummaryData;
+  const labels = Object.keys(monthlyData);
+  const revenueTotalsArray = [];
+  let yearlyRevenueTotal = 0;
+  labels.map((label) => {
+    const monthlySalesData = monthlyData[label];
+    const MonthlyOrderTotal = 0;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const orderIndex in monthlySalesData) {
+      const tmpOrder = monthlySalesData[orderIndex];
+      // console.log("TEMP ORDER");
+      // console.log(tmpOrder);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const orderItemIndex in tmpOrder.requestPayload.items.items) {
+        const OrderItem = tmpOrder.requestPayload.items.items[orderItemIndex];
+        // console.log(OrderItem);
+        try {
+          const RealPriceAmount = Number(OrderItem.PricePerGal) * Number(OrderItem.Quantity);
+          yearlyRevenueTotal += RealPriceAmount;
+        } catch (Error) {
+          // console.log(Error);
+        }
+      }
+    }
+    revenueTotalsArray.push(MonthlyOrderTotal);
+    return label;
+  });
+  return yearlyRevenueTotal;
+};
 
 const getCustomerCountDifferences = (analyticsData) => {
   const currentCustomerCount = analyticsData.customerData.length;
@@ -71,49 +101,11 @@ const getCustomerCountDifferences = (analyticsData) => {
     priorData: priorCustomerCount,
   };
 };
-const getRevenueDifferences = (customerOrderData) => {
-  // const data = analyticsData.customerData;
-  // data.sort((a, b) => a.TotalAmountPurchased < b.TotalAmountPurchased);
-  const currentMonthsOrders = [];
-  let currentMonthOrderTotal = 0;
-  const lastMonthsOrders = [];
-  let lastMonthOrderTotal = 0;
-  const currentDate = new Date(Date.now());
-  const currentMonth = currentDate.getMonth();
-  customerOrderData.map((order) => {
-    const orderMonth = new Date(order.createdDate).getMonth();
-    if (orderMonth === currentMonth) {
-      currentMonthsOrders.push(order);
-      order.order.items.items.map((item) => {
-        // console.log(OrderItem);
-        try {
-          const RealPriceAmount = Number(item.PricePerGal) * Number(item.Quantity);
-          currentMonthOrderTotal += RealPriceAmount;
-        } catch (Error) {
-          currentMonthOrderTotal += 0;
-          // console.log(Error);
-        }
-        return item;
-      });
-    } else if (orderMonth === currentMonth - 1) {
-      lastMonthsOrders.push(order);
-      order.order.items.items.map((item) => {
-        // console.log(OrderItem);
-        try {
-          const RealPriceAmount = Number(item.PricePerGal) * Number(item.Quantity);
-          lastMonthOrderTotal += RealPriceAmount;
-        } catch (Error) {
-          currentMonthOrderTotal += 0;
-          // console.log(Error);
-        }
-        return item;
-      });
-    }
-    return order;
-  });
-
-  const currentYear = currentMonthOrderTotal; // getYearlyRevenue(analyticsData.monthlySummary.currentYear.orders);
-  const priorYear = lastMonthOrderTotal; // getYearlyRevenue(analyticsData.monthlySummary.oneYearPrior.orders);
+const getRevenueDifferences = (analyticsData) => {
+  console.log("GET REVENUE DIFFERENCES");
+  console.log(analyticsData);
+  const currentYear = getYearlyRevenue(analyticsData.monthlySummary.currentYear.orders);
+  const priorYear = getYearlyRevenue(analyticsData.monthlySummary.oneYearPrior.orders);
 
   let RevenueDifferencesString = "";
   let RevenueDifferencesColor = "";
@@ -132,7 +124,7 @@ const getRevenueDifferences = (customerOrderData) => {
   return {
     label: RevenueDifferencesString,
     color: RevenueDifferencesColor,
-    count: currentYear,
+    currentRevenue: currentYear,
     lastYearsRevenue: priorYear,
   };
 };

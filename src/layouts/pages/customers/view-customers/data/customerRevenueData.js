@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 /**
 =========================================================
@@ -15,18 +13,10 @@ Coded by www.creative-tim.com
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-// {
-//   labels: ["Facebook", "Direct", "Organic", "Referral"],
-//   datasets: {
-//     label: "Projects",
-//     backgroundColors: ["info", "primary", "dark", "secondary", "primary"],
-//     data: [15, 20, 12, 60],
-//   },
-// };
-
-const formatCustomerRevenueData = (customerOrderData) => {
-  // const data = analyticsData.customerData;
-  // data.sort((a, b) => a.TotalAmountPurchased < b.TotalAmountPurchased);
+const formatRevenueChartData = (analyticsData) => {
+  console.log(analyticsData);
+  const monthlyData = analyticsData; // analyticsData.monthlySummary.currentYear.orders;
+  console.log(monthlyData);
   const Year1PriorDate = new Date(Date.now());
   Year1PriorDate.setFullYear(Year1PriorDate.getFullYear() - 1);
 
@@ -48,22 +38,22 @@ const formatCustomerRevenueData = (customerOrderData) => {
   tmpDateObj.setDate(1);
   const responseLabels = [];
   const responseValues = [];
-  for (const month in monthNames) {
+  Object.keys(monthNames).map((month) => {
     const currentMonthLabel = `${monthNames[tmpDateObj.getMonth()]} ${tmpDateObj.getFullYear()}`;
     console.log(currentMonthLabel);
     const MonthToSearch = tmpDateObj;
     const MonthOrdersArray = [];
     let MonthlyOrderTotal = 0;
 
-    customerOrderData.map((order) => {
+    monthlyData.map((order) => {
       const orderMonth = new Date(order.createdDate).getMonth();
       if (new Date(order.createdDate) > MonthToSearch && orderMonth === tmpDateObj.getMonth()) {
         MonthOrdersArray.push(order);
         const tmpOrder = order;
-        // console.log("TEMP ORDER");
-        // console.log(tmpOrder);
+        console.log("TEMP ORDER");
+        console.log(tmpOrder);
         // eslint-disable-next-line no-restricted-syntax
-        tmpOrder.order.items.items.map((OrderItem) => {
+        tmpOrder.requestPayload.items.items.map((OrderItem) => {
           try {
             const RealPriceAmount = Number(OrderItem.PricePerGal) * Number(OrderItem.Quantity);
             MonthlyOrderTotal += RealPriceAmount;
@@ -78,11 +68,11 @@ const formatCustomerRevenueData = (customerOrderData) => {
     responseLabels.push(currentMonthLabel);
     responseValues.push(MonthlyOrderTotal);
     tmpDateObj.setMonth(tmpDateObj.getMonth() - 1);
-  }
+    return month;
+  });
 
   console.log(responseLabels);
   console.log(responseValues);
-  // Turn 2 arrays into a single object
   const combineArrays = (first, second) =>
     first.reduce((acc, val, ind) => {
       acc[val] = second[ind];
@@ -95,24 +85,5 @@ const formatCustomerRevenueData = (customerOrderData) => {
       { label: "Montly Order Totals", data: combineArrays(responseLabels, responseValues) },
     ],
   };
-
-  // for (const customerDataIndex in top6Customers) {
-  //   const customer = top6Customers[customerDataIndex];
-  //   if (customer.Customer && customer.Customer.length > 0) {
-  //     labels.push(customer.Customer.slice(0, 25));
-  //     customerOrderTotalData.push(customer.TotalAmountPurchased);
-  //   }
-  // }
-
-  // const tmpResponseObj = {
-  //   labels,
-  //   datasets: {
-  //     label: "Projects",
-  //     backgroundColors: ["info", "error", "dark", "secondary", "primary", "green", "yellow"],
-  //     data: customerOrderTotalData,
-  //   },
-  // };
-  // return tmpResponseObj;
 };
-
-export default formatCustomerRevenueData;
+export default formatRevenueChartData;

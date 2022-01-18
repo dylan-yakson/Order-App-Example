@@ -187,6 +187,9 @@ const Invoice = forwardRef(({ OrderData, po, InitialOrderDate }, ref) => {
                         ],
                         rows: order.items.items.map((item) => {
                           const orderItem = item;
+                          if (typeof orderItem.Package !== "string") {
+                            orderItem.Package = orderItem.Package.packName;
+                          }
                           return orderItem;
                         }),
                       }}

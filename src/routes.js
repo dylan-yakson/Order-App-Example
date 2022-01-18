@@ -46,7 +46,8 @@ import HelpPage from "layouts/pages/profile/help";
 // import NewUser from "layouts/pages/users/new-user";
 // import NewCustomer from "layouts/pages/customers/new-customer";
 import NewCustomerAddress from "layouts/pages/customers/new-customer-address";
-import Settings from "layouts/pages/account/settings";
+// import Settings from "layouts/pages/account/settings";
+
 // import Billing from "layouts/pages/account/billing";
 // import Invoice from "layouts/pages/account/invoice";
 // import Timeline from "layouts/pages/projects/timeline";
@@ -115,12 +116,12 @@ const routes = [
         route: "/announcements",
         component: <Announcements />,
       },
-      {
-        name: "Settings",
-        key: "profile-settings",
-        route: "/pages/account/settings",
-        component: <Settings />,
-      },
+      // {
+      //   name: "Settings",
+      //   key: "profile-settings",
+      //   route: "/pages/account/settings",
+      //   component: <Settings />,
+      // },
       // {
       //   name: "Logout",
       //   key: "logout",

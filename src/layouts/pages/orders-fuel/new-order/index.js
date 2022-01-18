@@ -25,10 +25,13 @@ import Card from "@mui/material/Card";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
+import CircularProgress from "@mui/material/CircularProgress";
 
 // Material Dashboard 2 PRO React components
 import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
+import MDAlert from "components/MDAlert";
+import MDAlertCloseIcon from "components/MDAlert/MDAlertCloseIcon";
 
 // Material Dashboard 2 PRO React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -63,12 +66,14 @@ function getSteps() {
   return ["Order Info", "Customer Info", "Customer Address", "Pricing", "Confirmation"];
 }
 
-function NewUser() {
+function NewFuelOrder() {
   const [activeStep, setActiveStep] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [customerAddresses, setCustomerAddresses] = useState([]);
   const [stagedOrder, setStagedOrder] = useState({});
   const [stagedActions, setStagedActions] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [OrderStatusAlert, setOrderStatusAlert] = useState(null);
   const [stagedFormattedOrder, setStagedFormattedOrder] = useState({});
   const steps = getSteps();
   const { formId, formField } = form;
@@ -91,6 +96,7 @@ function NewUser() {
 
   const sendOrderForProcessing = () => {
     if (stagedActions) {
+      setIsLoading(true);
       if (stagedFormattedOrder.sales && stagedFormattedOrder.sales.quoteType === "Quote") {
         submitQuote(stagedFormattedOrder, "fuel").then((orderSubmisionResponse) => {
           console.log(orderSubmisionResponse);
@@ -98,6 +104,20 @@ function NewUser() {
           stagedActions.resetForm();
           stagedActions.setFieldValue("orderItems", []);
           setActiveStep(0);
+          setIsLoading(false);
+          setDialogOpen(false);
+          setOrderStatusAlert(
+            <MDAlert color="success">
+              Order {orderSubmisionResponse.PO} Created Successfully
+              <MDAlertCloseIcon
+                onClick={() => {
+                  setOrderStatusAlert(null);
+                }}
+              >
+                &times;
+              </MDAlertCloseIcon>
+            </MDAlert>
+          );
         });
       } else {
         submitOrder(stagedFormattedOrder, "fuel").then((orderSubmisionResponse) => {
@@ -106,6 +126,20 @@ function NewUser() {
           stagedActions.resetForm();
           stagedActions.setFieldValue("orderItems", []);
           setActiveStep(0);
+          setIsLoading(false);
+          setDialogOpen(false);
+          setOrderStatusAlert(
+            <MDAlert color="success">
+              Order {orderSubmisionResponse.PO} Created Successfully
+              <MDAlertCloseIcon
+                onClick={() => {
+                  setOrderStatusAlert(null);
+                }}
+              >
+                &times;
+              </MDAlertCloseIcon>
+            </MDAlert>
+          );
         });
       }
     }
@@ -176,10 +210,21 @@ function NewUser() {
     setDialogOpen(false);
     stagedActions.setSubmitting(false);
   };
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
+          <CircularProgress center />
+        </MDBox>
+      </DashboardLayout>
+    );
+  }
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox py={3} mb={20} height="65vh">
+        {OrderStatusAlert}
         <Dialog
           open={dialogOpen}
           onClose={handleDialogClose}
@@ -269,4 +314,4 @@ function NewUser() {
   );
 }
 
-export default NewUser;
+export default NewFuelOrder;

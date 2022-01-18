@@ -18,6 +18,7 @@ const pullProducts = () => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
@@ -39,6 +40,7 @@ const pullProductPackages = (productId) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
@@ -62,6 +64,7 @@ const pullPreviousPrices = (userEmail, productId, productPackage = "") => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
@@ -87,12 +90,13 @@ const sendQuoteConfirmationEmail = (userEmail, externalEmail, orderType, orderNu
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
 const sendOrderConfirmationEmail = (userEmail, externalEmail, orderType, orderNumber) => {
   const config = {
-    method: "get",
+    method: "post",
     // url: "https://kp01-01.com:1880/api/resendOrderEmail",
     url: "https://kp01-01.com:1880/api/resendOrderEmailDev",
     headers: {
@@ -112,9 +116,32 @@ const sendOrderConfirmationEmail = (userEmail, externalEmail, orderType, orderNu
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
+const pullAllOrders = (userEmail) => {
+  const config = {
+    method: "get",
+    // url: "https://kp01-01.com:1880/api/pullOrders",
+    url: "https://kp01-01.com:1880/api/pullAllOrders",
+    headers: {
+      apikey: process.env.REACT_APP_NODE_KEY,
+      email: userEmail,
+    },
+  };
+
+  return axios(config)
+    .then((response) => {
+      // console.log(JSON.stringify(response.data));
+      const orders = response.data;
+      return orders;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error;
+    });
+};
 const pullWarehouseOrders = (userEmail) => {
   const config = {
     method: "get",
@@ -134,6 +161,7 @@ const pullWarehouseOrders = (userEmail) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
@@ -156,6 +184,7 @@ const pullSiteToSiteOrders = (userEmail) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
@@ -178,12 +207,14 @@ const pullWarehouseQuotes = (userEmail) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 const pullFuelOrders = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://kp01-01.com:1880/api/pullFuelOrders",
+    url: "https://kp01-01.com:1880/api/pullFuelOrdersDev",
+    // url: "https://kp01-01.com:1880/api/pullFuelOrders",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -198,6 +229,7 @@ const pullFuelOrders = (userEmail) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 const pullFuelQuotes = (userEmail) => {
@@ -219,6 +251,7 @@ const pullFuelQuotes = (userEmail) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 const pullMonthlySalesAnalytics = (userEmail) => {
@@ -241,6 +274,7 @@ const pullMonthlySalesAnalytics = (userEmail) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 const pullMonthlySalesAnalyticsFuel = (userEmail) => {
@@ -263,6 +297,7 @@ const pullMonthlySalesAnalyticsFuel = (userEmail) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
@@ -285,6 +320,7 @@ const pullWarehouseDispatchOrders = (userEmail) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 const pullOrderStatus = (userEmail) => {
@@ -307,6 +343,7 @@ const pullOrderStatus = (userEmail) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
@@ -327,6 +364,7 @@ const pullCustomerAddresses = () => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
@@ -367,6 +405,7 @@ const submitOrder = (order, orderType) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 const submitSiteToSiteOrder = (order, orderType) => {
@@ -389,6 +428,7 @@ const submitSiteToSiteOrder = (order, orderType) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 
@@ -412,6 +452,7 @@ const submitQuote = (order, orderType) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 const updateOrder = (order, orderType, orderNumber) => {
@@ -434,6 +475,7 @@ const updateOrder = (order, orderType, orderNumber) => {
     })
     .catch((error) => {
       console.log(error);
+      return error;
     });
 };
 const convertOrderFormat = (initialOrder) => {
@@ -555,6 +597,7 @@ export {
   pullFuelOrders,
   pullWarehouseOrders,
   pullWarehouseQuotes,
+  pullAllOrders,
   pullPreviousPrices,
   pullProductPackages,
   pullProducts,

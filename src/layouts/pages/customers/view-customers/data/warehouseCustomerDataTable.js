@@ -35,6 +35,8 @@ const generateDataTableFromOrders = (
     }
     return -1;
   });
+  console.log("=============== LOOK HERE FOOL ===================");
+  console.log(orders);
   const FormattedOrders = orders.map((order) => {
     // const AlternativePO = `DJ0${order.PO}${new Date(order.createdDate)
     //   .getFullYear()
@@ -74,7 +76,7 @@ const generateDataTableFromOrders = (
     //   return tmpObj;
     // }
     let OrderTotal = 0;
-    order.order.items.items.map((item) => {
+    order.requestPayload.items.items.map((item) => {
       // console.log(OrderItem);
       try {
         const RealPriceAmount = Number(item.PricePerGal) * Number(item.Quantity);
@@ -88,7 +90,7 @@ const generateDataTableFromOrders = (
     const tmpObj = {
       PO: order.PO,
       createdDate: new Date(order.createdDate).toDateString(),
-      customer: order.order.destination.Customer,
+      customer: order.requestPayload.destination.Customer,
       total: OrderTotal || 0,
       // orderStatus: "Awaiting Status Update",
       // eslint-disable-next-line no-underscore-dangle

@@ -58,7 +58,12 @@ import { useMsal, useMsalAuthentication } from "@azure/msal-react";
 import PieChart from "examples/Charts/PieChart";
 
 // API & Data Functions
-import { pullMonthlySalesAnalytics, pullWarehouseOrders, pullFuelOrders } from "utils/koapi";
+import {
+  pullMonthlySalesAnalytics,
+  pullWarehouseOrders,
+  pullFuelOrders,
+  pullAllOrders,
+} from "utils/koapi";
 import generateAnalyticsDataFromOrders from "utils/analyticsapi";
 import formatRevenueChartData from "layouts/pages/dashboards/sales/data/revenueChartData";
 import formatCustomerBreakdownData from "layouts/pages/dashboards/sales/data/customerBreakdownChartData";
@@ -116,7 +121,7 @@ function Sales() {
     console.log(username);
     console.log(accounts[0]);
     // Not working for some reason
-    const WarehouseOrders = pullWarehouseOrders(username).then((warehouseOrders) => {
+    const WarehouseOrders = pullAllOrders(username).then((warehouseOrders) => {
       setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
 
       const formattedOrderAnalyticsData = generateAnalyticsDataFromOrders(warehouseOrders);
@@ -149,38 +154,38 @@ function Sales() {
       setCalendarEventData(tmpCalendarEventData);
     });
 
-    const fuelOrders = pullFuelOrders(username).then((warehouseOrders) => {
-      setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
+    // const fuelOrders = pullFuelOrders(username).then((warehouseOrders) => {
+    //   setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
 
-      const formattedOrderAnalyticsData = generateAnalyticsDataFromOrders(warehouseOrders);
-      console.log(formattedOrderAnalyticsData);
-      setAnalyticalData(formattedOrderAnalyticsData);
-      const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(
-        formattedOrderAnalyticsData
-      );
-      setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
+    //   const formattedOrderAnalyticsData = generateAnalyticsDataFromOrders(warehouseOrders);
+    //   console.log(formattedOrderAnalyticsData);
+    //   setAnalyticalData(formattedOrderAnalyticsData);
+    //   const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(
+    //     formattedOrderAnalyticsData
+    //   );
+    //   setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
 
-      const tmpTopProductsChartData = formatTopProductsData(formattedOrderAnalyticsData);
-      setTopProductsChartData(tmpTopProductsChartData);
+    //   const tmpTopProductsChartData = formatTopProductsData(formattedOrderAnalyticsData);
+    //   setTopProductsChartData(tmpTopProductsChartData);
 
-      // get Order Quantity Difference
-      const orderQuantityDifferenceLabel = getOrderQuantityDifferences(formattedOrderAnalyticsData);
-      setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
+    //   // get Order Quantity Difference
+    //   const orderQuantityDifferenceLabel = getOrderQuantityDifferences(formattedOrderAnalyticsData);
+    //   setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
 
-      const revenueDifferenceLabel = getRevenueDifferences(formattedOrderAnalyticsData);
-      setrevenueDifferenceObj(revenueDifferenceLabel);
+    //   const revenueDifferenceLabel = getRevenueDifferences(formattedOrderAnalyticsData);
+    //   setrevenueDifferenceObj(revenueDifferenceLabel);
 
-      const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(
-        formattedOrderAnalyticsData
-      );
-      setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
+    //   const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(
+    //     formattedOrderAnalyticsData
+    //   );
+    //   setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
 
-      const tmpTopCustomersChartData = formatTopCustomersChartData(formattedOrderAnalyticsData);
-      setTopCustomersChartData(tmpTopCustomersChartData);
+    //   const tmpTopCustomersChartData = formatTopCustomersChartData(formattedOrderAnalyticsData);
+    //   setTopCustomersChartData(tmpTopCustomersChartData);
 
-      const tmpCalendarEventData = formatCalendarEventData(formattedOrderAnalyticsData);
-      setCalendarEventData(tmpCalendarEventData);
-    });
+    //   const tmpCalendarEventData = formatCalendarEventData(formattedOrderAnalyticsData);
+    //   setCalendarEventData(tmpCalendarEventData);
+    // });
     // pullMonthlySalesAnalytics(username).then((analyticsData) => {
     //   console.log(analyticsData);
     //   setAnalyticalData(analyticsData);
