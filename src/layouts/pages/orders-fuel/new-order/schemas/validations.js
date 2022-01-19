@@ -71,7 +71,7 @@ export default [
   Yup.object().shape({
     [customerLocationName.name]: Yup.string().required(customerLocationName.errorMsg),
     [customerLocationID.name]: Yup.string().required(customerLocationID.errorMsg),
-    [destinationAddress1.name]: Yup.string().required(destinationAddress1.errorMsg),
+    // [destinationAddress1.name]: Yup.string().required(destinationAddress1.errorMsg),
     // [destinationCity.name]: Yup.string().required(destinationCity.errorMsg),
     // [destinationState.name]: Yup.string().required(destinationState.errorMsg),
     // [destinationZip.name]: Yup.string().required(destinationZip.errorMsg),
@@ -86,7 +86,7 @@ export default [
           ID: Yup.string().required(orderItemID.errorMsg),
           Package: Yup.string().required(orderItemPackage.errorMsg),
           Price: Yup.number().moreThan(0).required(orderItemPrice.errorMsg),
-          Quantity: Yup.number().moreThan(0).required(orderItemQuantity.errorMsg),
+          Quantity: Yup.number().required(orderItemQuantity.errorMsg),
         })
       )
       .required(orderItems.errorMsg) // these constraints are shown if and only if inner constraints are satisfied

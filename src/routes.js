@@ -42,6 +42,7 @@ import Sales from "layouts/pages/dashboards/sales";
 import Dispatch from "layouts/pages/dashboards/dispatch";
 import Announcements from "layouts/pages/profile/announcements";
 import HelpPage from "layouts/pages/profile/help";
+import Documents from "layouts/pages/profile/documents";
 
 // import NewUser from "layouts/pages/users/new-user";
 // import NewCustomer from "layouts/pages/customers/new-customer";
@@ -128,6 +129,13 @@ const routes = [
       //   route: "/authentication/sign-in",
       //   component: <SignInBasic />,
       // },
+      {
+        name: "SDS & PDS",
+        key: "documents",
+        route: "/documents",
+        component: <Documents />,
+        type: "auth",
+      },
       {
         name: "Help Desk",
         key: "helpmeh",

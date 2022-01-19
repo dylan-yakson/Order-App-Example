@@ -80,7 +80,6 @@ function NewOrder() {
   const currentValidation = validations[activeStep];
   const isLastStep = activeStep === steps.length - 1;
   const { accounts } = useMsal();
-
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const handleBack = () => setActiveStep(activeStep - 1);
   useEffect(() => {

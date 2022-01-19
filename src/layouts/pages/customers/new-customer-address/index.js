@@ -39,7 +39,9 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
+import CircularProgress from "@mui/material/CircularProgress";
+import MDAlert from "components/MDAlert";
+import MDAlertCloseIcon from "components/MDAlert/MDAlertCloseIcon";
 // NewUser page components
 // import UserInfo from "layouts/pages/customers/new-customer-address/components/UserInfo";
 import CustomerInfo from "layouts/pages/customers/new-customer-address/components/Customers";
@@ -58,7 +60,13 @@ import form from "layouts/pages/customers/new-customer-address/schemas/form";
 import initialValues from "layouts/pages/customers/new-customer-address/schemas/initialValues";
 import { useMsal } from "@azure/msal-react";
 
-import { pullCustomerAddresses, convertOrderFormat, submitOrder, submitQuote } from "utils/koapi";
+import {
+  pullCustomerAddresses,
+  convertOrderFormat,
+  submitOrder,
+  submitQuote,
+  sendCustomerAddressRequestEmail,
+} from "utils/koapi";
 
 function getSteps() {
   return ["Customer Info", "Customer Address", "Location Contact Info"];
@@ -70,17 +78,20 @@ function NewUser() {
   const [customerAddresses, setCustomerAddresses] = useState([]);
   const [stagedOrder, setStagedOrder] = useState({});
   const [stagedActions, setStagedActions] = useState(null);
-  const [stagedFormattedOrder, setStagedFormattedOrder] = useState({});
+  const [stagedFormattedCustomerAddress, setStagedFormattedCustomerAddress] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [OrderStatusAlert, setOrderStatusAlert] = useState(null);
+
   const steps = getSteps();
   const { formId, formField } = form;
   const currentValidation = validations[activeStep];
   const isLastStep = activeStep === steps.length - 1;
   const { accounts } = useMsal();
+  const { username } = accounts[0];
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const handleBack = () => setActiveStep(activeStep - 1);
   useEffect(() => {
-    const { username } = accounts[0];
     console.log(username);
     console.log(accounts[0]);
     pullCustomerAddresses(username).then((response) => {
@@ -92,6 +103,23 @@ function NewUser() {
 
   const sendOrderForProcessing = () => {
     if (stagedActions) {
+      setIsLoading(true);
+      sendCustomerAddressRequestEmail(username, stagedFormattedCustomerAddress).then((response) => {
+        setIsLoading(false);
+        setDialogOpen(false);
+        setOrderStatusAlert(
+          <MDAlert color="success">
+            New Address request submited properly. We will be reaching out to you shortly.
+            <MDAlertCloseIcon
+              onClick={() => {
+                setOrderStatusAlert(null);
+              }}
+            >
+              &times;
+            </MDAlertCloseIcon>
+          </MDAlert>
+        );
+      });
       // if (stagedFormattedOrder.sales && stagedFormattedOrder.sales.quoteType === "Quote") {
       //   submitQuote(stagedFormattedOrder, "fuel").then((orderSubmisionResponse) => {
       //     console.log(orderSubmisionResponse);
@@ -111,26 +139,20 @@ function NewUser() {
       // }
     }
   };
+  const handleDialogClickOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    stagedActions.setSubmitting(false);
+  };
   const submitForm = async (values, actions) => {
-    // await sleep(1000);
-    // eslint-disable-next-line no-alert
-    // Clear button components
-    // await values.orderItems.map((item) => {
-    //   const responseObj = item;
-    //   try {
-    //     delete responseObj.EditBtn;
-    //   } catch (error) {
-    //     console.log("Error deleting item button", error);
-    //   }
-    //   return responseObj;
-    // });
-    // setStagedOrder(values);
-    // setDialogOpen(true);
-    // const formattedOrder = await convertOrderFormat(values);
-    // setStagedFormattedOrder(formattedOrder);
-    // console.log(values);
-    // console.log(formattedOrder);
-    // setStagedActions(actions);
+    await setDialogOpen(true);
+    await setStagedFormattedCustomerAddress(values);
+    await console.log(values);
+    await console.log(stagedFormattedCustomerAddress);
+    await setStagedActions(actions);
   };
 
   const handleSubmit = (values, actions) => {
@@ -157,18 +179,18 @@ function NewUser() {
         return null;
     }
   }
-  const handleDialogClickOpen = () => {
-    setDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setDialogOpen(false);
-    stagedActions.setSubmitting(false);
-  };
+  if (isLoading) {
+    return (
+      <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
+        <CircularProgress center />
+      </MDBox>
+    );
+  }
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox py={3} mb={20} height="65vh">
+        {OrderStatusAlert}
         <Dialog
           open={dialogOpen}
           onClose={handleDialogClose}

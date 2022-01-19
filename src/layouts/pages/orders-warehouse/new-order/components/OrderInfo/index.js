@@ -39,7 +39,8 @@ function OrderInfo({ formData }) {
   const { isQuoteOrOrder, customerType, deliveryByDate, quoteNum, originAddress } = formField;
   const [originWarehouseLocations, setOriginWarehouseLocations] = useState({});
   const { accounts } = useMsal();
-
+  const orderFilterDate = new Date(Date.now());
+  orderFilterDate.setDate(orderFilterDate.getDate() - 1);
   const {
     quoteNum: quoteNumV,
     isQuoteOrOrder: isQuoteOrOrderV,
@@ -172,7 +173,7 @@ function OrderInfo({ formData }) {
         </Grid>
         <MDDatePicker
           input={{ placeholder: "Select a date" }}
-          options={{ minDate: new Date(Date.now()) }}
+          options={{ minDate: orderFilterDate }}
           onChange={(val) => {
             console.log(val);
             setFieldValue("deliveryByDate", val);

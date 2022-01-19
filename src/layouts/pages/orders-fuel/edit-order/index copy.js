@@ -26,10 +26,13 @@ import Card from "@mui/material/Card";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
+import CircularProgress from "@mui/material/CircularProgress";
 
 // Material Dashboard 2 PRO React components
 import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
+import MDAlert from "components/MDAlert";
+import MDAlertCloseIcon from "components/MDAlert/MDAlertCloseIcon";
 
 // Material Dashboard 2 PRO React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -39,7 +42,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import CircularProgress from "@mui/material/CircularProgress";
 
 // EditOrder page components
 // import UserInfo from "layouts/pages/orders-fuel/edit-order/components/UserInfo";
@@ -48,12 +50,9 @@ import CustomerLocationInfo from "layouts/pages/orders-fuel/edit-order/component
 import OrderInfo from "layouts/pages/orders-fuel/edit-order/components/OrderInfo";
 import ProductInfo from "layouts/pages/orders-fuel/edit-order/components/ProductInfo";
 import ConfirmationScreen from "layouts/pages/orders-fuel/edit-order/components/Confirmation";
-
 // import Address from "layouts/pages/orders-fuel/edit-order/components/Address";
 // import Socials from "layouts/pages/orders-fuel/edit-order/components/Socials";
 // import Profile from "layouts/pages/orders-fuel/edit-order/components/Profile";
-import MDAlert from "components/MDAlert";
-import MDAlertCloseIcon from "components/MDAlert/MDAlertCloseIcon";
 
 // EditOrder layout schemas for form and form feilds
 import validations from "layouts/pages/orders-fuel/edit-order/schemas/validations";
@@ -73,33 +72,28 @@ function getSteps() {
   return ["Order Info", "Customer Info", "Customer Address", "Pricing", "Confirmation"];
 }
 
-function EditOrder({ OrderToEdit, onOrderCompletion, alertFunction }) {
+function EditOrder({ OrderToEdit }) {
   const [activeStep, setActiveStep] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [customerAddresses, setCustomerAddresses] = useState([]);
   const [stagedOrder, setStagedOrder] = useState({});
   const [OrderStatusAlert, setOrderStatusAlert] = useState(null);
-  const [originalOrder, setoriginalOrder] = useState(null);
-  const [stagedActions, setStagedActions] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
 
+  const [stagedActions, setStagedActions] = useState(null);
   const [stagedFormattedOrder, setStagedFormattedOrder] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const steps = getSteps();
   const { formId, formField } = form;
   const currentValidation = validations[activeStep];
   const isLastStep = activeStep === steps.length - 1;
   const { accounts } = useMsal();
 
-  const setOrderInProgress = () => {
-    onOrderCompletion(false);
-  };
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const handleBack = () => setActiveStep(activeStep - 1);
   useEffect(() => {
     const { username } = accounts[0];
     console.log(username);
     console.log(accounts[0]);
-    console.log(OrderToEdit);
     const convertedOrder = convertToSchemaFormat(OrderToEdit);
     pullCustomerAddresses(username).then((response) => {
       const customers = response;
@@ -111,72 +105,32 @@ function EditOrder({ OrderToEdit, onOrderCompletion, alertFunction }) {
   const sendOrderForProcessing = () => {
     if (stagedActions) {
       setIsLoading(true);
+
       updateOrder(stagedFormattedOrder, "fuel", OrderToEdit.PO).then((orderSubmisionResponse) => {
         console.log(orderSubmisionResponse);
-        if (orderSubmisionResponse.Error && orderSubmisionResponse.Error === "True") {
-          if (orderSubmisionResponse.Message) {
-            setIsLoading(false);
-            setOrderStatusAlert(
-              <MDAlert color="error">
-                We had an issue...
-                {orderSubmisionResponse.Message}
-                <MDAlertCloseIcon
-                  onClick={() => {
-                    setOrderStatusAlert(null);
-                  }}
-                >
-                  &times;
-                </MDAlertCloseIcon>
-              </MDAlert>
-            );
-          } else {
-            setIsLoading(false);
-            setOrderStatusAlert(
-              <MDAlert color="error">
-                Not sure what went wrong there.. Please try again in a few or contact IT if you
-                still have issues.
-                <MDAlertCloseIcon
-                  onClick={() => {
-                    setOrderStatusAlert(null);
-                  }}
-                >
-                  &times;
-                </MDAlertCloseIcon>
-              </MDAlert>
-            );
-          }
-        } else {
-          stagedActions.setSubmitting(false);
-          stagedActions.resetForm();
-          stagedActions.setFieldValue("orderItems", []);
-          setActiveStep(0);
-          setDialogOpen(false);
-          setIsLoading(false);
-
-          try {
-            alertFunction(
-              <MDAlert color="success">
-                Order {orderSubmisionResponse.PO} Edited Successfully
-                <MDAlertCloseIcon
-                  onClick={() => {
-                    alertFunction(null);
-                  }}
-                >
-                  &times;
-                </MDAlertCloseIcon>
-              </MDAlert>
-            );
-          } catch (Error) {
-            console.log("Error changing status");
-            console.log(Error);
-          }
-          setOrderInProgress(false);
-        }
+        stagedActions.setSubmitting(false);
+        stagedActions.resetForm();
+        stagedActions.setFieldValue("orderItems", []);
+        setIsLoading(true);
+        setDialogOpen(false);
+        setOrderStatusAlert(
+          <MDAlert color="success">
+            Order {OrderToEdit.PO} was updated succesfully.
+            <MDAlertCloseIcon
+              onClick={() => {
+                setOrderStatusAlert(null);
+              }}
+            >
+              &times;
+            </MDAlertCloseIcon>
+          </MDAlert>
+        );
+        setActiveStep(0);
       });
     }
   };
   const submitForm = async (values, actions) => {
-    // await sleep(1000);
+    await sleep(1000);
     // eslint-disable-next-line no-alert
     // Clear button components
     values.orderItems.map((item) => {
@@ -243,14 +197,16 @@ function EditOrder({ OrderToEdit, onOrderCompletion, alertFunction }) {
   };
   if (isLoading) {
     return (
-      <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
-        <CircularProgress center />
-      </MDBox>
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
+          <CircularProgress center />
+        </MDBox>
+      </DashboardLayout>
     );
   }
   return (
     <MDBox py={3} mb={20} height="65vh">
-      {OrderStatusAlert}
       <Dialog
         open={dialogOpen}
         onClose={handleDialogClose}
@@ -338,8 +294,6 @@ function EditOrder({ OrderToEdit, onOrderCompletion, alertFunction }) {
 // Typechecking props for the ActionCell
 EditOrder.propTypes = {
   OrderToEdit: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
-  onOrderCompletion: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
-  alertFunction: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
 };
 
 export default EditOrder;

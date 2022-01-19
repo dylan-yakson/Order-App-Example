@@ -21,7 +21,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 function Overview() {
   useEffect(() => {
-    window.open("https://kppetro.freshservice.com/support/home", "_blank");
+    window.open("https://kppetro.sharepoint.com/sites/KPSales/Shared Documents", "_blank");
   }, []);
   // eslint-disable-next-line no-unreachable
   return <Navigate to="/" />;

@@ -154,38 +154,6 @@ function Sales() {
       setCalendarEventData(tmpCalendarEventData);
     });
 
-    // const fuelOrders = pullFuelOrders(username).then((warehouseOrders) => {
-    //   setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
-
-    //   const formattedOrderAnalyticsData = generateAnalyticsDataFromOrders(warehouseOrders);
-    //   console.log(formattedOrderAnalyticsData);
-    //   setAnalyticalData(formattedOrderAnalyticsData);
-    //   const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(
-    //     formattedOrderAnalyticsData
-    //   );
-    //   setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
-
-    //   const tmpTopProductsChartData = formatTopProductsData(formattedOrderAnalyticsData);
-    //   setTopProductsChartData(tmpTopProductsChartData);
-
-    //   // get Order Quantity Difference
-    //   const orderQuantityDifferenceLabel = getOrderQuantityDifferences(formattedOrderAnalyticsData);
-    //   setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
-
-    //   const revenueDifferenceLabel = getRevenueDifferences(formattedOrderAnalyticsData);
-    //   setrevenueDifferenceObj(revenueDifferenceLabel);
-
-    //   const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(
-    //     formattedOrderAnalyticsData
-    //   );
-    //   setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
-
-    //   const tmpTopCustomersChartData = formatTopCustomersChartData(formattedOrderAnalyticsData);
-    //   setTopCustomersChartData(tmpTopCustomersChartData);
-
-    //   const tmpCalendarEventData = formatCalendarEventData(formattedOrderAnalyticsData);
-    //   setCalendarEventData(tmpCalendarEventData);
-    // });
     // pullMonthlySalesAnalytics(username).then((analyticsData) => {
     //   console.log(analyticsData);
     //   setAnalyticalData(analyticsData);

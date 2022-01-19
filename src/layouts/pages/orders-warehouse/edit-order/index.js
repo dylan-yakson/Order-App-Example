@@ -39,6 +39,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import CircularProgress from "@mui/material/CircularProgress";
 
 // EditOrder page components
 // import UserInfo from "layouts/pages/orders-warehouse/edit-order/components/UserInfo";
@@ -79,6 +80,8 @@ function EditOrder({ OrderToEdit, onOrderCompletion, alertFunction }) {
   const [OrderStatusAlert, setOrderStatusAlert] = useState(null);
   const [originalOrder, setoriginalOrder] = useState(null);
   const [stagedActions, setStagedActions] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [stagedFormattedOrder, setStagedFormattedOrder] = useState({});
   const steps = getSteps();
   const { formId, formField } = form;
@@ -106,6 +109,7 @@ function EditOrder({ OrderToEdit, onOrderCompletion, alertFunction }) {
 
   const sendOrderForProcessing = () => {
     if (stagedActions) {
+      setIsLoading(true);
       updateOrder(stagedFormattedOrder, "warehouse", OrderToEdit.PO).then(
         (orderSubmisionResponse) => {
           console.log(orderSubmisionResponse);
@@ -145,18 +149,7 @@ function EditOrder({ OrderToEdit, onOrderCompletion, alertFunction }) {
             stagedActions.setFieldValue("orderItems", []);
             setActiveStep(0);
             setDialogOpen(false);
-            setOrderStatusAlert(
-              <MDAlert color="success">
-                Order {orderSubmisionResponse.PO} Edited Successfully
-                <MDAlertCloseIcon
-                  onClick={() => {
-                    setOrderStatusAlert(null);
-                  }}
-                >
-                  &times;
-                </MDAlertCloseIcon>
-              </MDAlert>
-            );
+            setIsLoading(false);
             try {
               alertFunction(
                 <MDAlert color="success">
@@ -246,6 +239,14 @@ function EditOrder({ OrderToEdit, onOrderCompletion, alertFunction }) {
     setDialogOpen(false);
     stagedActions.setSubmitting(false);
   };
+  if (isLoading) {
+    return (
+      <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
+        <CircularProgress center />
+      </MDBox>
+    );
+  }
+
   return (
     <MDBox py={3} mb={20} height="65vh">
       {OrderStatusAlert}

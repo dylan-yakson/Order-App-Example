@@ -97,7 +97,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
                 PO: order.PO,
                 createdDate: order.createdDate,
                 deliveryDate: order.requestPayload.sales.deliveryDate,
-                order: order.requestPayload,
+                order: order.requestPayload || order.order,
               });
               productDataList = productDataList.map((productListItem) => {
                 if (productListItem.ProdID === currentProduct.ID) {
@@ -132,7 +132,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
                     PO: order.PO,
                     createdDate: order.createdDate,
                     deliveryDate: order.requestPayload.sales.deliveryDate,
-                    order: order.requestPayload,
+                    order: order.requestPayload || order.order,
                   },
                 ],
               };

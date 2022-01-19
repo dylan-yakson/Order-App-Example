@@ -14,9 +14,9 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 function getPercentageChange(newNumber, oldNumber) {
-  const decreaseValue = oldNumber - newNumber;
-  return Number((decreaseValue / oldNumber) * 100 * -1).toFixed(2);
-  // return Number((newNumber / oldNumber) * 100).toFixed(2);
+  // const decreaseValue = oldNumber - newNumber;
+  // return Number((decreaseValue / oldNumber) * 100 * -1).toFixed(2);
+  return Number((newNumber / oldNumber) * 100).toFixed(2);
 }
 const getOrderQuantityDifferences = (analyticsData) => {
   // get Order Quantity Difference
@@ -40,8 +40,6 @@ const getOrderQuantityDifferences = (analyticsData) => {
   return { label: orderQuantityString, color: orderQuantityColor };
 };
 const getYearlyRevenue = (yearlySummaryData) => {
-  console.log("YEARLY SUMMARY DATA");
-  console.log(yearlySummaryData);
   const monthlyData = yearlySummaryData;
   const labels = Object.keys(monthlyData);
   const revenueTotalsArray = [];

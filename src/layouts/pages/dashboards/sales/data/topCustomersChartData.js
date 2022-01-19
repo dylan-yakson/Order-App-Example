@@ -86,7 +86,7 @@ const formatTopCustomersChartData = (analyticsData) => {
   const tmpResponseObj = {
     columns: [
       { Header: "Customer", accessor: "customer", width: "55%" },
-      { Header: "Total $ Sold", accessor: "TotalAmountPurchased" },
+      // { Header: "Total $ Sold", accessor: "TotalAmountPurchased" },
       { Header: "Favorite Product", accessor: "favoriteProduct", align: "center" },
     ],
     rows: [],
@@ -110,9 +110,9 @@ const formatTopCustomersChartData = (analyticsData) => {
           orders={customerObject.orders.length}
         />
       ),
-      TotalAmountPurchased: (
-        <DefaultCell>${Number(customerObject.TotalAmountPurchased).toFixed(2)}</DefaultCell>
-      ),
+      // TotalAmountPurchased: (
+      //   <DefaultCell>${Number(customerObject.TotalAmountPurchased).toFixed(2)}</DefaultCell>
+      // ),
       favoriteProduct: (
         <FavoriteProductCell
           image={nikeV22}

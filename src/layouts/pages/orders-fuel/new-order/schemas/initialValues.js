@@ -46,7 +46,7 @@ const {
 
 const originInitial = pullOriginWarehouses()[0].address;
 export default {
-  [isQuoteOrOrder.name]: "Quote",
+  [isQuoteOrOrder.name]: "Order",
   [deliveryByDate.name]: "",
   [salesName.name]: "",
   [salesEmail.name]: "",

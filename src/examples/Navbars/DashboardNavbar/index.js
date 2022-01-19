@@ -114,9 +114,15 @@ function DashboardNavbar({ absolute, light, isMini }) {
       onClose={handleCloseNotificationsMenu}
       sx={{ mt: 2 }}
     >
-      <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
-      <NotificationItem icon={<Icon>podcasts</Icon>} title="Get Help from IT" />
-      <NotificationItem icon={<Icon>shopping_cart</Icon>} title="Dispatch Status" />
+      <Link to="/announcements">
+        <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
+      </Link>
+      <Link to="https://kppetro.freshservice.com/support/home">
+        <NotificationItem icon={<Icon>podcasts</Icon>} title="Get Help from IT" />
+      </Link>
+      <Link to="/announcements">
+        <NotificationItem icon={<Icon>shopping_cart</Icon>} title="Dispatch Status" />
+      </Link>
     </Menu>
   );
   const renderAccountMenu = () => (
@@ -131,8 +137,15 @@ function DashboardNavbar({ absolute, light, isMini }) {
       onClose={handleCloseAccountMenu}
       sx={{ mt: 2 }}
     >
-      <NotificationItem icon={<Icon>email</Icon>} title="Profile" />
-      <NotificationItem icon={<Icon>shopping_cart</Icon>} title="Sales Analytics" />
+      <Link to="/announcements">
+        <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
+      </Link>
+      <a target="_blank" href="https://kppetro.freshservice.com/support/home" rel="noreferrer">
+        <NotificationItem icon={<Icon>podcasts</Icon>} title="Get Help from IT" />
+      </a>
+      <Link to="/dashboards/dispatch">
+        <NotificationItem icon={<Icon>shopping_cart</Icon>} title="Dispatch Status" />
+      </Link>
       <NotificationItem
         onClick={() => {
           instance.logout({ postLogoutRedirectUri: "/signin" }).then(() => {});
@@ -198,7 +211,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 <Icon sx={iconsStyle}>account_circle</Icon>
               </IconButton>
               {renderAccountMenu()}
-              <IconButton
+              {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -212,7 +225,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   <Icon sx={iconsStyle}>notifications</Icon>
                 </MDBadge>
               </IconButton>
-              {renderNotificationMenu()}
+              {renderNotificationMenu()} */}
             </MDBox>
           </MDBox>
         )}

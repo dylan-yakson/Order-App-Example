@@ -47,7 +47,7 @@ const formatRevenueChartData = (analyticsData) => {
 
     monthlyData.map((order) => {
       const orderMonth = new Date(order.createdDate).getMonth();
-      if (new Date(order.createdDate) > MonthToSearch && orderMonth === tmpDateObj.getMonth()) {
+      if (new Date(order.createdDate) >= MonthToSearch && orderMonth === tmpDateObj.getMonth()) {
         MonthOrdersArray.push(order);
         const tmpOrder = order;
         // console.log("TEMP ORDER");

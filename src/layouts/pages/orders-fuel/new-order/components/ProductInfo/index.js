@@ -92,7 +92,7 @@ function ProductInfo({ formData }) {
     const orderItemPackage = selectedPackage;
     console.log(orderItemProduct);
     console.log(orderItemPackage);
-    if (orderItemProduct && orderItemProduct.ID && selectedQuantity > 0 && selectedPrice > 0) {
+    if (orderItemProduct && orderItemProduct.ID) {
       const orderItemObj = {
         Description: orderItemProduct.Description,
         ID: orderItemProduct.ID,

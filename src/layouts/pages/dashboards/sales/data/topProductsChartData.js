@@ -59,7 +59,8 @@ Coded by www.creative-tim.com
 //     },
 //   ],
 // };
-import ProductCell from "layouts/pages/dashboards/sales/components/ProductCell";
+// import ProductCell from "layouts/pages/dashboards/sales/components/ProductCell";
+import TopSellingProductCell from "layouts/pages/dashboards/sales/components/TopSellingProductCell";
 // import RefundsCell from "layouts/pages/dashboards/sales/components/RefundsCell";
 import DefaultCell from "layouts/pages/dashboards/sales/components/DefaultCell";
 // Images
@@ -117,14 +118,16 @@ const formatTopProductsData = (analyticsData) => {
         customerCountArr.push({ customer: currentOrder.customer, orderCount: 1 });
       }
     }
-    customerCountArr.sort((a, b) => a.orderCount > b.orderCount);
+    // customerCountArr.sort((a, b) => a.orderCount < b.orderCount);
+    customerCountArr.sort((a, b) => a.TotalAmountPurchased < b.TotalAmountPurchased);
+    console.log(customerCountArr);
     const [customer1] = customerCountArr;
     const tmpRow = {
       product: (
-        <ProductCell
+        <TopSellingProductCell
           image={nikeV22}
           name={currentProduct.ProdDescription}
-          orders={currentProduct.orderCount}
+          orders={currentProduct.TotalAmountPurchased}
         />
       ),
       // TotalAmountPurchased: (

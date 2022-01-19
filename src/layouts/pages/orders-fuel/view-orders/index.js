@@ -69,7 +69,7 @@ function OrderList() {
   const [selectedOrderToReview, setSelectedOrderToReview] = useState(null);
   const [isEditingOrder, setisEditingOrder] = useState(null);
   const [isReviewingOrder, setisReviewingOrder] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
   const [isActiveResendEmailAlert, setResendEmailAlert] = useState(null);
   const [emailToSendTo, setEmailToResendSendTo] = useState(null);
   const [orderToEmail, setorderToEmail] = useState(null);
@@ -94,7 +94,7 @@ function OrderList() {
     setisReviewingOrder(true);
   };
   const submitOrderEmailResend = () => {
-    setIsLoading(true);
+    setisLoading(true);
     console.log(orderToEmail);
     console.log(emailToSendTo);
     sendOrderConfirmationEmail(accounts[0].username, emailToSendTo, "fuel", orderToEmail.PO).then(
@@ -111,7 +111,7 @@ function OrderList() {
             </MDAlertCloseIcon>
           </MDAlert>
         );
-        setIsLoading(false);
+        setisLoading(false);
         setResendEmailAlert(false);
       }
     );
@@ -128,7 +128,7 @@ function OrderList() {
   };
   const refreshButtonFunction = () => {};
   useEffect(() => {
-    setIsLoading(true);
+    setisLoading(true);
     const { username } = accounts[0];
     console.log(username);
     console.log(accounts[0]);
@@ -154,7 +154,7 @@ function OrderList() {
             dispatchedOrdersStatus
           );
           setOrderData(tableData);
-          setIsLoading(false);
+          setisLoading(false);
         });
         // pullWarehouseDispatchOrders(username).then((dispatchOrders) => {
         //   setDispatchedOrders(dispatchOrders);
@@ -181,7 +181,7 @@ function OrderList() {
           resendEmailOrderFunction
         );
         setOrderData(tableData);
-        setIsLoading(false);
+        setisLoading(false);
       }
     });
   }, []);
@@ -307,10 +307,12 @@ function OrderList() {
         {isEditingOrder ? (
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              {OrderStatusAlert}
               <EditOrder
                 OrderToEdit={selectedOrderToEdit}
-                onOrderCompletion={() => setisEditingOrder(false)}
+                onOrderCompletion={() => {
+                  setisEditingOrder(false);
+                  setisLoading(false);
+                }}
                 alertFunction={setOrderStatusAlert}
               />
             </Grid>
