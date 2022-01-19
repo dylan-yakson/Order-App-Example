@@ -38,7 +38,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DefaultStatisticsCard from "examples/Cards/StatisticsCards/DefaultStatisticsCard";
-import DefaultLineChart from "layouts/pages/dashboards/sales/components/DefaultLineChart";
+import DefaultLineChart from "examples/Charts/LineCharts/DefaultLineChart";
 // import HorizontalBarChart from "examples/Charts/BarCharts/HorizontalBarChart";
 import EventCalendar from "examples/Calendar";
 // import calendarEventsData from "layouts/pages/widgets/data/calendarEventsData";
@@ -65,7 +65,6 @@ import {
   pullAllOrders,
 } from "utils/koapi";
 import generateAnalyticsDataFromOrders from "utils/analyticsapi";
-import pullOrderAnalyticsWithinTwoDates from "utils/salesAnalytics";
 import formatRevenueChartData from "layouts/pages/dashboards/sales/data/revenueChartData";
 import formatCustomerBreakdownData from "layouts/pages/dashboards/sales/data/customerBreakdownChartData";
 import formatTopProductsData from "layouts/pages/dashboards/sales/data/topProductsChartData";
@@ -82,16 +81,15 @@ function Sales() {
   const { login, result, error } = useMsalAuthentication("redirect");
 
   // DefaultStatisticsCard state for the dropdown value
-  const [salesDropdownValue, setSalesDropdownValue] = useState("Monthly");
-  const [customersDropdownValue, setCustomersDropdownValue] = useState("Monthly");
-  const [revenueDropdownValue, setRevenueDropdownValue] = useState("Monthly");
+  const [salesDropdownValue, setSalesDropdownValue] = useState("Yearly");
+  const [customersDropdownValue, setCustomersDropdownValue] = useState("Yearly");
+  const [revenueDropdownValue, setRevenueDropdownValue] = useState("Yearly");
 
   // DefaultStatisticsCard state for the dropdown action
   const [salesDropdown, setSalesDropdown] = useState(null);
   const [customersDropdown, setCustomersDropdown] = useState(null);
   const [revenueDropdown, setRevenueDropdown] = useState(null);
   const [analyticalData, setAnalyticalData] = useState(null);
-  const [priorAnalyticalData, setpriorAnalyticalData] = useState(null);
   const [monthlyRevenueChartData, setmonthlyRevenueChartData] = useState(null);
   const [CustomerBreakdownChartData, setCustomerBreakdownChartData] = useState(null);
   const [TopProductsChartData, setTopProductsChartData] = useState(null);
@@ -101,9 +99,6 @@ function Sales() {
   const [revenueDifferenceObj, setrevenueDifferenceObj] = useState(null);
   const [calendarEventData, setCalendarEventData] = useState(null);
   const [CalendarAlert, setCalendarAlert] = useState(null);
-  const [orderDateRange, setorderDateRange] = useState("Monthly");
-  const [isLoading, setIsLoading] = useState(null);
-  const { username } = accounts[0];
 
   // DefaultStatisticsCard handler for the dropdown action
   const openSalesDropdown = ({ currentTarget }) => setSalesDropdown(currentTarget);
@@ -121,202 +116,81 @@ function Sales() {
     setRevenueDropdown(null);
     setRevenueDropdownValue(currentTarget.innerText || salesDropdownValue);
   };
-
-  const handleMonthlyDateChange = () => {
-    console.log(username);
-    console.log(accounts[0]);
-    // Not working for some reason
-    setIsLoading(true);
-    setorderDateRange("Month");
-    const WarehouseOrders = pullAllOrders(username).then((warehouseOrders) => {
-      setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
-
-      const MonthPriorDate = new Date(Date.now());
-      MonthPriorDate.setMonth(MonthPriorDate.getMonth() - 1);
-
-      const TwoMonthPriorDate = new Date(Date.now());
-      TwoMonthPriorDate.setMonth(MonthPriorDate.getMonth() - 1);
-
-      const currentDate = new Date(Date.now());
-      const orderSalesAnalytics = pullOrderAnalyticsWithinTwoDates(
-        warehouseOrders,
-        MonthPriorDate,
-        currentDate
-      );
-      const PriorSalesAnalytics = pullOrderAnalyticsWithinTwoDates(
-        warehouseOrders,
-        TwoMonthPriorDate,
-        MonthPriorDate
-      );
-      console.log("ORDER SALES ANALYTICS");
-      console.log(orderSalesAnalytics);
-      setAnalyticalData(orderSalesAnalytics);
-      setpriorAnalyticalData(PriorSalesAnalytics);
-      const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(orderSalesAnalytics);
-      setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
-
-      const tmpTopProductsChartData = formatTopProductsData(orderSalesAnalytics);
-      setTopProductsChartData(tmpTopProductsChartData);
-      const tmpTopCustomersChartData = formatTopCustomersChartData(orderSalesAnalytics);
-      setTopCustomersChartData(tmpTopCustomersChartData);
-
-      // get Order Quantity Difference
-      const orderQuantityDifferenceLabel = getOrderQuantityDifferences(
-        orderSalesAnalytics,
-        PriorSalesAnalytics
-      );
-      setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
-
-      const revenueDifferenceLabel = getRevenueDifferences(
-        orderSalesAnalytics,
-        PriorSalesAnalytics
-      );
-      setrevenueDifferenceObj(revenueDifferenceLabel);
-
-      const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(
-        orderSalesAnalytics,
-        PriorSalesAnalytics
-      );
-      setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
-
-      const tmpCalendarEventData = formatCalendarEventData(warehouseOrders);
-      setCalendarEventData(tmpCalendarEventData);
-      setIsLoading(false);
-    });
-    setSalesDropdownValue("Monthly");
-    setCustomersDropdownValue("Monthly");
-    setRevenueDropdownValue("Monthly");
-    setIsLoading(false);
-  };
-  const handleYearlyDateChange = () => {
-    console.log(username);
-    console.log(accounts[0]);
-    // Not working for some reason
-    setIsLoading(true);
-    setorderDateRange("Year");
-    const WarehouseOrders = pullAllOrders(username).then((warehouseOrders) => {
-      setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
-
-      const YearPriorDate = new Date(Date.now());
-      YearPriorDate.setFullYear(YearPriorDate.getFullYear() - 1);
-
-      const TwoYearPriorDate = new Date(Date.now());
-      TwoYearPriorDate.setFullYear(YearPriorDate.getFullYear() - 1);
-
-      const currentDate = new Date(Date.now());
-      const orderSalesAnalytics = pullOrderAnalyticsWithinTwoDates(
-        warehouseOrders,
-        YearPriorDate,
-        currentDate
-      );
-      const PriorSalesAnalytics = pullOrderAnalyticsWithinTwoDates(
-        warehouseOrders,
-        TwoYearPriorDate,
-        YearPriorDate
-      );
-      console.log("ORDER SALES ANALYTICS");
-      console.log(orderSalesAnalytics);
-      setAnalyticalData(orderSalesAnalytics);
-      setpriorAnalyticalData(PriorSalesAnalytics);
-      const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(orderSalesAnalytics);
-      setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
-
-      const tmpTopProductsChartData = formatTopProductsData(orderSalesAnalytics);
-      setTopProductsChartData(tmpTopProductsChartData);
-      const tmpTopCustomersChartData = formatTopCustomersChartData(orderSalesAnalytics);
-      setTopCustomersChartData(tmpTopCustomersChartData);
-
-      // get Order Quantity Difference
-      const orderQuantityDifferenceLabel = getOrderQuantityDifferences(
-        orderSalesAnalytics,
-        PriorSalesAnalytics
-      );
-      setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
-
-      const revenueDifferenceLabel = getRevenueDifferences(
-        orderSalesAnalytics,
-        PriorSalesAnalytics
-      );
-      setrevenueDifferenceObj(revenueDifferenceLabel);
-
-      const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(
-        orderSalesAnalytics,
-        PriorSalesAnalytics
-      );
-      setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
-
-      const tmpCalendarEventData = formatCalendarEventData(warehouseOrders);
-      setCalendarEventData(tmpCalendarEventData);
-
-      setIsLoading(false);
-    });
-    setSalesDropdownValue("Yearly");
-    setCustomersDropdownValue("Yearly");
-    setRevenueDropdownValue("Yearly");
-    setIsLoading(false);
-  };
   useEffect(() => {
+    const { username } = accounts[0];
     console.log(username);
     console.log(accounts[0]);
     // Not working for some reason
-    setIsLoading(true);
-    setorderDateRange("Month");
     const WarehouseOrders = pullAllOrders(username).then((warehouseOrders) => {
       setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
 
-      const MonthPriorDate = new Date(Date.now());
-      MonthPriorDate.setMonth(MonthPriorDate.getMonth() - 1);
-
-      const TwoMonthPriorDate = new Date(Date.now());
-      TwoMonthPriorDate.setMonth(MonthPriorDate.getMonth() - 1);
-
-      const currentDate = new Date(Date.now());
-      const orderSalesAnalytics = pullOrderAnalyticsWithinTwoDates(
-        warehouseOrders,
-        MonthPriorDate,
-        currentDate
+      const formattedOrderAnalyticsData = generateAnalyticsDataFromOrders(warehouseOrders);
+      console.log(formattedOrderAnalyticsData);
+      setAnalyticalData(formattedOrderAnalyticsData);
+      const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(
+        formattedOrderAnalyticsData
       );
-      const PriorSalesAnalytics = pullOrderAnalyticsWithinTwoDates(
-        warehouseOrders,
-        TwoMonthPriorDate,
-        MonthPriorDate
-      );
-      console.log("ORDER SALES ANALYTICS");
-      console.log(orderSalesAnalytics);
-      setAnalyticalData(orderSalesAnalytics);
-      setpriorAnalyticalData(PriorSalesAnalytics);
-      const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(orderSalesAnalytics);
       setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
 
-      const tmpTopProductsChartData = formatTopProductsData(orderSalesAnalytics);
+      const tmpTopProductsChartData = formatTopProductsData(formattedOrderAnalyticsData);
       setTopProductsChartData(tmpTopProductsChartData);
-      const tmpTopCustomersChartData = formatTopCustomersChartData(orderSalesAnalytics);
-      setTopCustomersChartData(tmpTopCustomersChartData);
 
       // get Order Quantity Difference
-      const orderQuantityDifferenceLabel = getOrderQuantityDifferences(
-        orderSalesAnalytics,
-        PriorSalesAnalytics
-      );
+      const orderQuantityDifferenceLabel = getOrderQuantityDifferences(formattedOrderAnalyticsData);
       setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
 
-      const revenueDifferenceLabel = getRevenueDifferences(
-        orderSalesAnalytics,
-        PriorSalesAnalytics
-      );
+      const revenueDifferenceLabel = getRevenueDifferences(formattedOrderAnalyticsData);
       setrevenueDifferenceObj(revenueDifferenceLabel);
 
       const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(
-        orderSalesAnalytics,
-        PriorSalesAnalytics
+        formattedOrderAnalyticsData
       );
       setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
 
-      const tmpCalendarEventData = formatCalendarEventData(warehouseOrders);
+      const tmpTopCustomersChartData = formatTopCustomersChartData(formattedOrderAnalyticsData);
+      setTopCustomersChartData(tmpTopCustomersChartData);
+
+      const tmpCalendarEventData = formatCalendarEventData(formattedOrderAnalyticsData);
       setCalendarEventData(tmpCalendarEventData);
-      setIsLoading(false);
     });
-    setIsLoading(false);
+
+    // pullMonthlySalesAnalytics(username).then((analyticsData) => {
+    //   console.log(analyticsData);
+    //   setAnalyticalData(analyticsData);
+    //   // Configure Revenue Dataset
+    //   const tmpDataset = [];
+    //   console.log(analyticsData);
+    //   // const revenueTableData = formatRevenueChartData(analyticsData);
+    //   // setmonthlyRevenueChartData(revenueTableData);
+
+    //   const WarehouseOrders = pullWarehouseOrders(username).then((warehouseOrders) => {
+    //     setmonthlyRevenueChartData(formatRevenueChartData(warehouseOrders));
+
+    //     const formattedOrderAnalyticsData = generateAnalyticsDataFromOrders(warehouseOrders);
+    //   });
+
+    //   const tmpcustomerBreakdownChartData = formatCustomerBreakdownData(analyticsData);
+    //   setCustomerBreakdownChartData(tmpcustomerBreakdownChartData);
+
+    //   const tmpTopProductsChartData = formatTopProductsData(analyticsData);
+    //   setTopProductsChartData(tmpTopProductsChartData);
+
+    //   // get Order Quantity Difference
+    //   const orderQuantityDifferenceLabel = getOrderQuantityDifferences(analyticsData);
+    //   setOrderQuantityDifferenceObj(orderQuantityDifferenceLabel);
+
+    //   const revenueDifferenceLabel = getRevenueDifferences(analyticsData);
+    //   setrevenueDifferenceObj(revenueDifferenceLabel);
+
+    //   const tmpCustomerCountDifferenceLabel = getCustomerCountDifferences(analyticsData);
+    //   setCustomerCountDifferenceObj(tmpCustomerCountDifferenceLabel);
+
+    //   const tmpTopCustomersChartData = formatTopCustomersChartData(analyticsData);
+    //   setTopCustomersChartData(tmpTopCustomersChartData);
+
+    //   const tmpCalendarEventData = formatCalendarEventData(analyticsData);
+    //   setCalendarEventData(tmpCalendarEventData);
+    // });
   }, []);
   // Dropdown menu template for the DefaultStatisticsCard
   const renderMenu = (state, close) => (
@@ -328,21 +202,12 @@ function Sales() {
       keepMounted
       disableAutoFocusItem
     >
-      {/* <MenuItem onClick={close}>Weekly</MenuItem> */}
-      <MenuItem onClick={handleMonthlyDateChange}>Monthly</MenuItem>
-      <MenuItem onClick={handleYearlyDateChange}>Yearly</MenuItem>
+      <MenuItem onClick={close}>Weekly</MenuItem>
+      <MenuItem onClick={close}>Monthly</MenuItem>
+      <MenuItem onClick={close}>Yearly</MenuItem>
     </Menu>
   );
-  if (isLoading) {
-    return (
-      <DashboardLayout>
-        <DashboardNavbar />
-        <MDBox display="flex" justifyContent="center" alignItems="flex-start" mb={2}>
-          <CircularProgress center />
-        </MDBox>
-      </DashboardLayout>
-    );
-  }
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -357,7 +222,7 @@ function Sales() {
                   percentage={{
                     color: revenueDifferenceObj.color,
                     value: revenueDifferenceObj.label,
-                    label: `since last ${orderDateRange} ($${revenueDifferenceObj.lastYearsRevenue})`,
+                    label: `since last year ($${revenueDifferenceObj.lastYearsRevenue})`,
                   }}
                   dropdown={{
                     action: openSalesDropdown,
@@ -379,7 +244,7 @@ function Sales() {
                   percentage={{
                     color: CustomerCountDifferenceObj.color,
                     value: CustomerCountDifferenceObj.label, // "+12",
-                    label: `since last ${orderDateRange} (${CustomerCountDifferenceObj.priorData})`,
+                    label: `since last year (${CustomerCountDifferenceObj.priorData})`,
                   }}
                   dropdown={{
                     action: openCustomersDropdown,
@@ -397,11 +262,11 @@ function Sales() {
               {OrderQuantityDifferenceObj ? (
                 <DefaultStatisticsCard
                   title="order quantity"
-                  count={analyticalData.orders.length}
+                  count={analyticalData.monthlySummary.currentYear.totalOrders}
                   percentage={{
                     color: OrderQuantityDifferenceObj.color,
                     value: OrderQuantityDifferenceObj.label, // "+12",
-                    label: `since last ${orderDateRange} (${priorAnalyticalData.orders.length})`,
+                    label: `since last year (${analyticalData.monthlySummary.oneYearPrior.totalOrders})`,
                   }}
                   dropdown={{
                     action: openRevenueDropdown,
@@ -428,8 +293,8 @@ function Sales() {
                   pt={2}
                   px={2}
                 >
-                  <MDTypography variant="h6">Top 5 Customers this {orderDateRange}</MDTypography>
-                  <Tooltip title="See your top 5 Customers This Month" placement="bottom" arrow>
+                  <MDTypography variant="h6">Top 5 Customers</MDTypography>
+                  <Tooltip title="See your top 5 Customers" placement="bottom" arrow>
                     <MDButton variant="outlined" color="secondary" size="small" circular iconOnly>
                       <Icon>priority_high</Icon>
                     </MDButton>
@@ -467,16 +332,16 @@ function Sales() {
             <Grid item xs={12} sm={6} lg={6}>
               {monthlyRevenueChartData ? (
                 <DefaultLineChart
-                  title="Sales past 3 months"
+                  title="Revenue"
                   description={
                     <MDBox display="flex" justifyContent="space-between">
                       <MDBox display="flex" ml={-1}>
-                        {/* <MDBadgeDot color="info" size="sm" badgeContent="Fuel & Warehouse" /> */}
-                        <MDBadgeDot color="dark" size="sm" badgeContent="Fuel & Warehouse" />
+                        <MDBadgeDot color="info" size="sm" badgeContent="Warehouse" />
+                        <MDBadgeDot color="dark" size="sm" badgeContent="Fuel" />
                       </MDBox>
                       <MDBox mt={-4} mr={-1} position="absolute" right="1.5rem">
                         <Tooltip
-                          title="See amount sold for the past 3 months"
+                          title="See amount sold for the past 12 months"
                           placement="left"
                           arrow
                         >

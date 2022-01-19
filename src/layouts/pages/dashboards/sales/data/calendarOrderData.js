@@ -85,44 +85,37 @@ const getColor = (status) => {
       return "success";
   }
 };
-const formatCalendarEventData = (analyticsData) => {
-  const { customerData } = analyticsData;
-  // eslint-disable-next-line prefer-const
-  let responseObj = [];
-  for (const customerIndex in customerData) {
-    const customer = customerData[customerIndex];
-    const customersOrders = customerData.orders;
-    // console.log(customer);
-    for (const customerOrderIndex in customer.orders) {
-      const orderObj = customer.orders[customerOrderIndex];
-      console.log(orderObj);
-      const tmpObject = {
-        title: `${orderObj.PO} - ${customer.Customer}`,
-        start: orderObj.deliveryDate || orderObj.createdDate,
-        end: orderObj.deliveryDate || orderObj.createdDate,
-        // start: new Date(Date.now()),
-        // end: new Date(Date.now()),
-        className: getColor(orderObj.orderStatus),
-        orderObject: orderObj,
-      };
-      responseObj.push(tmpObject);
-      // responseObj.push({
-      //   title: "All day conference",
-      //   start: "2021-08-01",
-      //   end: "2021-08-01",
-      //   className: "success",
-      // });
-    }
+const formatCalendarEventData = (orders) => {
+  const responseObj = [];
+  for (const OrderIndex in orders) {
+    const orderObj = orders[OrderIndex];
+    const customer = orderObj.requestPayload.destination.Customer;
+    const tmpObject = {
+      title: `${orderObj.PO} - ${customer}`,
+      start: orderObj.deliveryDate || orderObj.createdDate,
+      end: orderObj.deliveryDate || orderObj.createdDate,
+      // start: new Date(Date.now()),
+      // end: new Date(Date.now()),
+      className: getColor(orderObj.orderStatus),
+      orderObject: orderObj,
+    };
+    responseObj.push(tmpObject);
+    // responseObj.push({
+    //   title: "All day conference",
+    //   start: "2021-08-01",
+    //   end: "2021-08-01",
+    //   className: "success",
+    // });
   }
-  // console.log(responseObj);
   return responseObj;
-
-  // responseObj.push({
-  //   title: "All day conference",
-  //   start: new Date(Date.now()),
-  //   end: new Date(Date.now()),
-  //   className: "success",
-  // });
-  // return responseObj;
 };
+// console.log(responseObj);
+
+// responseObj.push({
+//   title: "All day conference",
+//   start: new Date(Date.now()),
+//   end: new Date(Date.now()),
+//   className: "success",
+// });
+// return responseObj;
 export default formatCalendarEventData;

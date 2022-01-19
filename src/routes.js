@@ -106,6 +106,14 @@ const routes = [
     type: "auth",
   },
   {
+    name: "signin",
+    key: "signin",
+    route: "/signin",
+    isVisible: false,
+    component: <SignInBasic />,
+    type: "auth",
+  },
+  {
     type: "collapse",
     name: "USER_LOGIN_NAME",
     key: "USER_LOGIN_NAME",

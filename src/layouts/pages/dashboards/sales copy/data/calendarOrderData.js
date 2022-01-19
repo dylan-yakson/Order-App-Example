@@ -63,7 +63,6 @@ Coded by www.creative-tim.com
 //   ],
 // };
 import ProductCell from "layouts/pages/dashboards/sales/components/ProductCell";
-import FavoriteProductCell from "layouts/pages/dashboards/sales/components/favoriteCell";
 // import RefundsCell from "layouts/pages/dashboards/sales/components/RefundsCell";
 import DefaultCell from "layouts/pages/dashboards/sales/components/DefaultCell";
 // Images
@@ -72,65 +71,58 @@ import nikeV22 from "assets/images/ecommerce/blue-shoe.jpeg";
 // import blackChair from "assets/images/ecommerce/black-chair.jpeg";
 // import wirelessCharger from "assets/images/ecommerce/bang-sound.jpeg";
 // import tripKit from "assets/images/ecommerce/photo-tools.jpeg";
+import { formatDate } from "@fullcalendar/react";
 
-const formatTopCustomersChartData = (orderData) => {
-  const { customers } = orderData;
-  customers
-    .sort((a, b) => {
-      if (a.TotalAmountPurchased < b.TotalAmountPurchased) {
-        return 1;
-      }
-      return -1;
-    })
-    .filter((item) => item.Customer !== "");
-  const tmpResponseObj = {
-    columns: [
-      { Header: "Customer", accessor: "customer", width: "55%" },
-      // { Header: "Total $ Sold", accessor: "TotalAmountPurchased" },
-      { Header: "Favorite Product", accessor: "favoriteProduct", align: "center" },
-    ],
-    rows: [],
-  };
-  let top10Customers;
-  if (customers.length > 10) {
-    top10Customers = customers.slice(0, 10);
-  } else {
-    top10Customers = customers;
+const getColor = (status) => {
+  switch (status) {
+    case "Billed":
+      return "success";
+    case "Open":
+      return "primary";
+    case "Order Cancelled":
+      return "error";
+    default:
+      return "success";
   }
-  for (const bestCustomerIndex in top10Customers) {
-    const customerObject = top10Customers[bestCustomerIndex];
-    const customersProductData = customerObject.products;
-    const [tmpCustomersFavoriteProduct] = customersProductData.sort((a, b) => {
-      if (a.totalAmountSpent < b.totalAmountSpent) {
-        return 1;
-      }
-      return -1;
-    });
-    // console.log("FAVORITE PRODUCT", tmpCustomersFavoriteProduct);
-    const tmpRow = {
-      customer: (
-        <ProductCell
-          image={nikeV22}
-          name={customerObject.Customer}
-          orders={customerObject.orders.length}
-        />
-      ),
-      // TotalAmountPurchased: (
-      //   <DefaultCell>${Number(customerObject.TotalAmountPurchased).toFixed(2)}</DefaultCell>
-      // ),
-      favoriteProduct: (
-        <FavoriteProductCell
-          image={nikeV22}
-          name={tmpCustomersFavoriteProduct.itemDesc}
-          orders={tmpCustomersFavoriteProduct.totalAmountSpent}
-        />
-      ),
-      // <DefaultCell>{tmpCustomersFavoriteProduct.itemDesc}</DefaultCell>,
-    };
-    // console.log("TopCustomers: ", customerObject, tmpCustomersFavoriteProduct);
-    tmpResponseObj.rows.push(tmpRow);
-  }
-  return tmpResponseObj;
 };
+const formatCalendarEventData = (analyticsData) => {
+  const { customerData } = analyticsData;
+  // eslint-disable-next-line prefer-const
+  let responseObj = [];
+  for (const customerIndex in customerData) {
+    const customer = customerData[customerIndex];
+    const customersOrders = customerData.orders;
+    // console.log(customer);
+    for (const customerOrderIndex in customer.orders) {
+      const orderObj = customer.orders[customerOrderIndex];
+      console.log(orderObj);
+      const tmpObject = {
+        title: `${orderObj.PO} - ${customer.Customer}`,
+        start: orderObj.deliveryDate || orderObj.createdDate,
+        end: orderObj.deliveryDate || orderObj.createdDate,
+        // start: new Date(Date.now()),
+        // end: new Date(Date.now()),
+        className: getColor(orderObj.orderStatus),
+        orderObject: orderObj,
+      };
+      responseObj.push(tmpObject);
+      // responseObj.push({
+      //   title: "All day conference",
+      //   start: "2021-08-01",
+      //   end: "2021-08-01",
+      //   className: "success",
+      // });
+    }
+  }
+  // console.log(responseObj);
+  return responseObj;
 
-export default formatTopCustomersChartData;
+  // responseObj.push({
+  //   title: "All day conference",
+  //   start: new Date(Date.now()),
+  //   end: new Date(Date.now()),
+  //   className: "success",
+  // });
+  // return responseObj;
+};
+export default formatCalendarEventData;

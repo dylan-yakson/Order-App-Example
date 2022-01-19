@@ -18,13 +18,13 @@ function getPercentageChange(newNumber, oldNumber) {
   return Number((decreaseValue / oldNumber) * 100 * -1).toFixed(2);
   // return Number((newNumber / oldNumber) * 100).toFixed(2);
 }
-const getOrderQuantityDifferences = (currentSalesAnalytics, priorSalesAnalytics) => {
+const getOrderQuantityDifferences = (analyticsData) => {
   // get Order Quantity Difference
   let orderQuantityString = "";
   let orderQuantityColor = "";
   const yearlyOrderQuantityDifference = getPercentageChange(
-    currentSalesAnalytics.orders.length,
-    priorSalesAnalytics.orders.length
+    analyticsData.monthlySummary.currentYear.totalOrders,
+    analyticsData.monthlySummary.oneYearPrior.totalOrders
   );
   console.log(yearlyOrderQuantityDifference);
   if (yearlyOrderQuantityDifference > 0) {
@@ -39,15 +39,48 @@ const getOrderQuantityDifferences = (currentSalesAnalytics, priorSalesAnalytics)
   }
   return { label: orderQuantityString, color: orderQuantityColor };
 };
-const getCustomerCountDifferences = (currentSalesAnalytics, priorSalesAnalytics) => {
-  const currentCustomerLength = currentSalesAnalytics.customers.length;
-  const priorCustomerLength = priorSalesAnalytics.customers.length;
+const getYearlyRevenue = (yearlySummaryData) => {
+  console.log("YEARLY SUMMARY DATA");
+  console.log(yearlySummaryData);
+  const monthlyData = yearlySummaryData;
+  const labels = Object.keys(monthlyData);
+  const revenueTotalsArray = [];
+  let yearlyRevenueTotal = 0;
+  labels.map((label) => {
+    const monthlySalesData = monthlyData[label];
+    const MonthlyOrderTotal = 0;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const orderIndex in monthlySalesData) {
+      const tmpOrder = monthlySalesData[orderIndex];
+      // console.log("TEMP ORDER");
+      // console.log(tmpOrder);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const orderItemIndex in tmpOrder.requestPayload.items.items) {
+        const OrderItem = tmpOrder.requestPayload.items.items[orderItemIndex];
+        // console.log(OrderItem);
+        try {
+          const RealPriceAmount = Number(OrderItem.PricePerGal) * Number(OrderItem.Quantity);
+          yearlyRevenueTotal += RealPriceAmount;
+        } catch (Error) {
+          // console.log(Error);
+        }
+      }
+    }
+    revenueTotalsArray.push(MonthlyOrderTotal);
+    return label;
+  });
+  return yearlyRevenueTotal;
+};
+
+const getCustomerCountDifferences = (analyticsData) => {
+  const currentCustomerCount = analyticsData.customerData.length;
+  const priorCustomerCount = analyticsData.priorCustomerData.length;
 
   let CustomerCountDifferencesString = "";
   let CustomerCountDifferencesColor = "";
   const yearlyOrderQuantityDifference = getPercentageChange(
-    currentCustomerLength,
-    priorCustomerLength
+    currentCustomerCount,
+    priorCustomerCount
   );
 
   // ) Number(
@@ -66,16 +99,17 @@ const getCustomerCountDifferences = (currentSalesAnalytics, priorSalesAnalytics)
   return {
     label: CustomerCountDifferencesString,
     color: CustomerCountDifferencesColor,
-    currentData: currentCustomerLength,
-    priorData: priorCustomerLength,
+    currentData: analyticsData.customerData.length,
+    priorData: priorCustomerCount,
   };
 };
-const getRevenueDifferences = (currentSalesAnalytics, priorSalesAnalytics) => {
-  const currentSalesTotal = currentSalesAnalytics.totalSales;
-  const priorSalesTotal = priorSalesAnalytics.totalSales;
+const getRevenueDifferences = (analyticsData) => {
+  const currentYear = getYearlyRevenue(analyticsData.monthlySummary.currentYear.orders);
+  const priorYear = getYearlyRevenue(analyticsData.monthlySummary.oneYearPrior.orders);
+
   let RevenueDifferencesString = "";
   let RevenueDifferencesColor = "";
-  const yearlyOrderQuantityDifference = getPercentageChange(currentSalesTotal, priorSalesTotal);
+  const yearlyOrderQuantityDifference = getPercentageChange(currentYear, priorYear);
 
   if (yearlyOrderQuantityDifference > 0) {
     RevenueDifferencesString = `+${yearlyOrderQuantityDifference}%`; // `-${yearlyOrderQuantityDifference}`;
@@ -90,8 +124,8 @@ const getRevenueDifferences = (currentSalesAnalytics, priorSalesAnalytics) => {
   return {
     label: RevenueDifferencesString,
     color: RevenueDifferencesColor,
-    currentRevenue: currentSalesTotal,
-    lastYearsRevenue: priorSalesTotal,
+    currentRevenue: currentYear,
+    lastYearsRevenue: priorYear,
   };
 };
 

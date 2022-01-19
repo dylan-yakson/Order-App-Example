@@ -30,6 +30,8 @@ import MDBox from "components/MDBox";
 
 // Material Dashboard 2 PRO React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+
 // import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import ProfileInfoCard from "layouts/pages/profile/components/ProfileInfoCard";
@@ -71,6 +73,7 @@ function Overview() {
   );
   return (
     <DashboardLayout>
+      <DashboardNavbar />
       <Header />
       <MDBox my={3}>
         <Grid container spacing={3}>

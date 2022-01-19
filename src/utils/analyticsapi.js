@@ -50,7 +50,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
 
   const priorCustomersOrders = [];
   let priorProductDataList = [];
-  console.log(ordersJson);
+  //  console.log(ordersJson);
   for (const each in ordersJson) {
     const orderItem = ordersJson[each];
     const orderDate = new Date(ordersJson[each].createdDate);
@@ -62,7 +62,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
     const priorFilterDate = new Date(Date.now());
     priorFilterDate.setFullYear(filterDate.getFullYear() - 2);
 
-    console.log(filterDate.toDateString()); // "Fri Oct 04 2019"
+    //  console.log(filterDate.toDateString()); // "Fri Oct 04 2019"
     // Current Year
     if (orderDate > filterDate) {
       // Product Analytics Data
@@ -88,7 +88,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
                 Number(currentProduct.PricePerGal) * Number(currentProduct.Quantity);
               TotalOrderAmount += RealPriceAmount;
             } catch (Error) {
-              console.log("Trouble calculating real price of order");
+              //  console.log("Trouble calculating real price of order");
               console.error(Error);
             }
             currentProdObj.TotalAmountPurchased += TotalOrderAmount;
@@ -119,8 +119,8 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
                 Number(currentProduct.PricePerGal) * Number(currentProduct.Quantity);
               TotalOrderAmount += RealPriceAmount;
             } catch (Error) {
-              console.log("Trouble calculating real price of order");
-              console.log(Error);
+              //  console.log("Trouble calculating real price of order");
+              //  console.log(Error);
             }
             const tmpObj = {
               ProdID: currentProduct.ID,
@@ -141,7 +141,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
           }
         }
       } catch (error) {
-        console.log(error);
+        //  console.log(error);
       }
 
       // Customer Analytics Data
@@ -150,8 +150,8 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
         const filteredCustomerOrders = customersOrders.filter(
           (customer) => customer.CustomerID === order.requestPayload.destination.CustomerID
         );
-        console.log("FilteredCustomerList");
-        console.log(filteredCustomerOrders);
+        //  console.log("FilteredCustomerList");
+        //  console.log(filteredCustomerOrders);
         if (filteredCustomerOrders[0]) {
           const customerObj = filteredCustomerOrders[0];
           const customerProductsList = customerObj.products;
@@ -192,8 +192,8 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
                 customerObj.products.push(customerOrderItemTmp);
               }
             } catch (Error) {
-              console.log("Trouble calculating real price of order");
-              console.log(Error);
+              //  console.log("Trouble calculating real price of order");
+              //  console.log(Error);
             }
           }
           try {
@@ -234,8 +234,8 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
               };
               customerOrderItemProducts.push(customerOrderItemTmp);
             } catch (Error) {
-              console.log("Trouble calculating real price of order");
-              console.log(Error);
+              //  console.log("Trouble calculating real price of order");
+              //  console.log(Error);
             }
           }
           const tmpObj = {
@@ -261,7 +261,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
           customersOrders.push(tmpObj);
         }
       } catch (error) {
-        console.log(error);
+        //  console.log(error);
       }
     }
     // Prior Year
@@ -290,8 +290,8 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
                   Number(currentProduct.PricePerGal) * Number(currentProduct.Quantity);
                 TotalOrderAmount += RealPriceAmount;
               } catch (Error) {
-                console.log("Trouble calculating real price of order");
-                console.log(Error);
+                //  console.log("Trouble calculating real price of order");
+                //  console.log(Error);
               }
               currentProdObj.TotalAmountPurchased += TotalOrderAmount;
               currentProdObj.orderCount += 1;
@@ -320,8 +320,8 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
                   Number(currentProduct.PricePerGal) * Number(currentProduct.Quantity);
                 TotalOrderAmount += RealPriceAmount;
               } catch (Error) {
-                console.log("Trouble calculating real price of order");
-                console.log(Error);
+                //  console.log("Trouble calculating real price of order");
+                //  console.log(Error);
               }
               const tmpObj = {
                 ProdID: currentProduct.ID,
@@ -341,7 +341,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
             }
           }
         } catch (error) {
-          console.log(error);
+          //  console.log(error);
         }
 
       // Customer Analytics Data
@@ -350,8 +350,8 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
         const filteredCustomerOrders = priorCustomersOrders.filter(
           (customer) => customer.CustomerID === order.requestPayload.destination.CustomerID
         );
-        console.log("FilteredCustomerList");
-        console.log(filteredCustomerOrders);
+        //  console.log("FilteredCustomerList");
+        //  console.log(filteredCustomerOrders);
         if (filteredCustomerOrders[0]) {
           const customerObj = filteredCustomerOrders[0];
           let TotalOrderAmount = 0;
@@ -367,8 +367,8 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
               const RealPriceAmount = Number(OrderItem.PricePerGal) * Number(OrderItem.Quantity);
               TotalOrderAmount += RealPriceAmount;
             } catch (Error) {
-              console.log("Trouble calculating real price of order");
-              console.log(Error);
+              //  console.log("Trouble calculating real price of order");
+              //  console.log(Error);
             }
           }
           try {
@@ -414,8 +414,8 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
               const RealPriceAmount = Number(OrderItem.PricePerGal) * Number(OrderItem.Quantity);
               TotalOrderAmount += RealPriceAmount;
             } catch (Error) {
-              console.log("Trouble calculating real price of order");
-              console.log(Error);
+              //  console.log("Trouble calculating real price of order");
+              //  console.log(Error);
             }
           }
           const tmpObj = {
@@ -440,7 +440,7 @@ const generateAnalyticsDataFromOrders = (ordersJson) => {
           priorCustomersOrders.push(tmpObj);
         }
       } catch (error) {
-        console.log(error);
+        //  console.log(error);
       }
     }
     const Year1PriorDate = new Date(Date.now());

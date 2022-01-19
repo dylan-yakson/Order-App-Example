@@ -67,7 +67,7 @@ export default function App({ pca }) {
   const { instance, accounts } = useMsal();
   const [graphData, setGraphData] = useState(null);
   const isAuthenticated = useIsAuthenticated();
-  const { login, result, error } = useMsalAuthentication("redirect");
+  // const { login, result, error } = useMsalAuthentication("redirect");
 
   const [controller, dispatch] = useMaterialUIController();
   const {

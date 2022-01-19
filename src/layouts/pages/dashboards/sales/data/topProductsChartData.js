@@ -71,7 +71,8 @@ import nikeV22 from "assets/images/ecommerce/blue-shoe.jpeg";
 // import tripKit from "assets/images/ecommerce/photo-tools.jpeg";
 
 const formatTopProductsData = (analyticsData) => {
-  const productSalesData = analyticsData.productData;
+  const productSalesData = analyticsData.products;
+  const customerSalesData = analyticsData.customers;
 
   const tmpResponseObj = {
     columns: [
@@ -90,50 +91,51 @@ const formatTopProductsData = (analyticsData) => {
   };
 
   productSalesData.sort((a, b) => {
-    if (a.TotalAmountPurchased < b.TotalAmountPurchased) {
+    if (a.totalAmountSpent < b.totalAmountSpent) {
       return 1;
     }
     return -1;
   });
-  const top6Products = productSalesData.slice(0, 10);
+  let top6Products;
+  if (productSalesData.length > 10) {
+    top6Products = productSalesData.slice(0, 10);
+  } else {
+    top6Products = productSalesData;
+  }
   for (const orderIndex in top6Products) {
     const currentProduct = productSalesData[orderIndex];
-
-    // Get most occuring customer in product orders
-    const customerCountArr = [];
-    for (const productOrderIndex in currentProduct.orders) {
-      const currentOrder = currentProduct.orders[productOrderIndex];
-      const filteredCustomer = customerCountArr.filter(
-        (customer) => customer.customer === currentOrder.customer
+    const mostOrderedCustomer = { customer: "", orderQuantity: 0 };
+    const customersThatOrderedProduct = customerSalesData.filter((customer) => {
+      const customerProducts = customer.products.filter(
+        (product) => product.itemDesc === currentProduct.itemDesc
       );
-      if (filteredCustomer && filteredCustomer[0]) {
-        customerCountArr.map((customer) => {
-          const tmpCust = customer;
-          if (customer.customer === currentOrder.customer) {
-            tmpCust.orderCount += 1;
-          }
-          return tmpCust;
-        });
-      } else {
-        customerCountArr.push({ customer: currentOrder.customer, orderCount: 1 });
+      if (customerProducts && customerProducts[0]) {
+        if (mostOrderedCustomer.orderQuantity < customerProducts[0].totalAmountSpent) {
+          mostOrderedCustomer.orderQuantity = customerProducts[0].totalAmountSpent;
+          mostOrderedCustomer.customer = customer.Customer;
+        }
+        return true;
       }
-    }
-    // customerCountArr.sort((a, b) => a.orderCount < b.orderCount);
-    customerCountArr.sort((a, b) => a.TotalAmountPurchased < b.TotalAmountPurchased);
-    console.log(customerCountArr);
-    const [customer1] = customerCountArr;
+      return false;
+    });
+    console.log(customersThatOrderedProduct);
     const tmpRow = {
       product: (
         <TopSellingProductCell
           image={nikeV22}
-          name={currentProduct.ProdDescription}
-          orders={currentProduct.TotalAmountPurchased}
+          name={currentProduct.itemDesc}
+          orders={currentProduct.totalAmountSpent}
         />
       ),
       // TotalAmountPurchased: (
       //   <DefaultCell>${Number(currentProduct.TotalAmountPurchased).toFixed(2)}</DefaultCell>
       // ),
-      bestCustomer: <DefaultCell>{customer1.customer}</DefaultCell>,
+      bestCustomer: (
+        <DefaultCell>
+          {mostOrderedCustomer.customer}:{" "}
+          <span style={{ color: "green" }}>${mostOrderedCustomer.orderQuantity}</span> purchased{" "}
+        </DefaultCell>
+      ),
     };
     tmpResponseObj.rows.push(tmpRow);
   }

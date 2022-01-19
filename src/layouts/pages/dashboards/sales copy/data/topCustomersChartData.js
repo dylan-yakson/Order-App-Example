@@ -73,9 +73,9 @@ import nikeV22 from "assets/images/ecommerce/blue-shoe.jpeg";
 // import wirelessCharger from "assets/images/ecommerce/bang-sound.jpeg";
 // import tripKit from "assets/images/ecommerce/photo-tools.jpeg";
 
-const formatTopCustomersChartData = (orderData) => {
-  const { customers } = orderData;
-  customers
+const formatTopCustomersChartData = (analyticsData) => {
+  const { customerData } = analyticsData;
+  customerData
     .sort((a, b) => {
       if (a.TotalAmountPurchased < b.TotalAmountPurchased) {
         return 1;
@@ -91,12 +91,7 @@ const formatTopCustomersChartData = (orderData) => {
     ],
     rows: [],
   };
-  let top10Customers;
-  if (customers.length > 10) {
-    top10Customers = customers.slice(0, 10);
-  } else {
-    top10Customers = customers;
-  }
+  const top10Customers = customerData.slice(0, 10);
   for (const bestCustomerIndex in top10Customers) {
     const customerObject = top10Customers[bestCustomerIndex];
     const customersProductData = customerObject.products;

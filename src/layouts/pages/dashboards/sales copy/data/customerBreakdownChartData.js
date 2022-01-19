@@ -24,10 +24,10 @@ Coded by www.creative-tim.com
 // };
 
 const formatCustomerBreakdownData = (analyticsData) => {
-  const { customers } = analyticsData;
+  const { customerData } = analyticsData;
   const labels = [];
   const customerOrderTotalData = [];
-  const data = customers
+  const data = customerData
     .sort((a, b) => {
       if (a.TotalAmountPurchased < b.TotalAmountPurchased) {
         return 1;

@@ -1,6 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-unused-vars */
-/* eslint-disable array-callback-return */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 /**
@@ -62,8 +59,8 @@ Coded by www.creative-tim.com
 //     },
 //   ],
 // };
-import ProductCell from "layouts/pages/dashboards/sales/components/ProductCell";
-import FavoriteProductCell from "layouts/pages/dashboards/sales/components/favoriteCell";
+// import ProductCell from "layouts/pages/dashboards/sales/components/ProductCell";
+import TopSellingProductCell from "layouts/pages/dashboards/sales/components/TopSellingProductCell";
 // import RefundsCell from "layouts/pages/dashboards/sales/components/RefundsCell";
 import DefaultCell from "layouts/pages/dashboards/sales/components/DefaultCell";
 // Images
@@ -73,64 +70,74 @@ import nikeV22 from "assets/images/ecommerce/blue-shoe.jpeg";
 // import wirelessCharger from "assets/images/ecommerce/bang-sound.jpeg";
 // import tripKit from "assets/images/ecommerce/photo-tools.jpeg";
 
-const formatTopCustomersChartData = (orderData) => {
-  const { customers } = orderData;
-  customers
-    .sort((a, b) => {
-      if (a.TotalAmountPurchased < b.TotalAmountPurchased) {
-        return 1;
-      }
-      return -1;
-    })
-    .filter((item) => item.Customer !== "");
+const formatTopProductsData = (analyticsData) => {
+  const productSalesData = analyticsData.productData;
+
   const tmpResponseObj = {
     columns: [
-      { Header: "Customer", accessor: "customer", width: "55%" },
+      { Header: "Product", accessor: "product", width: "55%" },
       // { Header: "Total $ Sold", accessor: "TotalAmountPurchased" },
-      { Header: "Favorite Product", accessor: "favoriteProduct", align: "center" },
+      { Header: "Purchased Most By", accessor: "bestCustomer", align: "center" },
     ],
-    rows: [],
+    rows: [
+      // {
+      //   product: <ProductCell image={nikeV22} name="Nike v22 Running" orders={8.232} />,
+      //   value: <DefaultCell>$130.992</DefaultCell>,
+      //   adsSpent: <DefaultCell>$9.500</DefaultCell>,
+      //   refunds: <RefundsCell value={13} icon={{ color: "success", name: "keyboard_arrow_up" }} />,
+      // },
+    ],
   };
-  let top10Customers;
-  if (customers.length > 10) {
-    top10Customers = customers.slice(0, 10);
-  } else {
-    top10Customers = customers;
-  }
-  for (const bestCustomerIndex in top10Customers) {
-    const customerObject = top10Customers[bestCustomerIndex];
-    const customersProductData = customerObject.products;
-    const [tmpCustomersFavoriteProduct] = customersProductData.sort((a, b) => {
-      if (a.totalAmountSpent < b.totalAmountSpent) {
-        return 1;
+
+  productSalesData.sort((a, b) => {
+    if (a.TotalAmountPurchased < b.TotalAmountPurchased) {
+      return 1;
+    }
+    return -1;
+  });
+  const top6Products = productSalesData.slice(0, 10);
+  for (const orderIndex in top6Products) {
+    const currentProduct = productSalesData[orderIndex];
+
+    // Get most occuring customer in product orders
+    const customerCountArr = [];
+    for (const productOrderIndex in currentProduct.orders) {
+      const currentOrder = currentProduct.orders[productOrderIndex];
+      const filteredCustomer = customerCountArr.filter(
+        (customer) => customer.customer === currentOrder.customer
+      );
+      if (filteredCustomer && filteredCustomer[0]) {
+        customerCountArr.map((customer) => {
+          const tmpCust = customer;
+          if (customer.customer === currentOrder.customer) {
+            tmpCust.orderCount += 1;
+          }
+          return tmpCust;
+        });
+      } else {
+        customerCountArr.push({ customer: currentOrder.customer, orderCount: 1 });
       }
-      return -1;
-    });
-    // console.log("FAVORITE PRODUCT", tmpCustomersFavoriteProduct);
+    }
+    // customerCountArr.sort((a, b) => a.orderCount < b.orderCount);
+    customerCountArr.sort((a, b) => a.TotalAmountPurchased < b.TotalAmountPurchased);
+    console.log(customerCountArr);
+    const [customer1] = customerCountArr;
     const tmpRow = {
-      customer: (
-        <ProductCell
+      product: (
+        <TopSellingProductCell
           image={nikeV22}
-          name={customerObject.Customer}
-          orders={customerObject.orders.length}
+          name={currentProduct.ProdDescription}
+          orders={currentProduct.TotalAmountPurchased}
         />
       ),
       // TotalAmountPurchased: (
-      //   <DefaultCell>${Number(customerObject.TotalAmountPurchased).toFixed(2)}</DefaultCell>
+      //   <DefaultCell>${Number(currentProduct.TotalAmountPurchased).toFixed(2)}</DefaultCell>
       // ),
-      favoriteProduct: (
-        <FavoriteProductCell
-          image={nikeV22}
-          name={tmpCustomersFavoriteProduct.itemDesc}
-          orders={tmpCustomersFavoriteProduct.totalAmountSpent}
-        />
-      ),
-      // <DefaultCell>{tmpCustomersFavoriteProduct.itemDesc}</DefaultCell>,
+      bestCustomer: <DefaultCell>{customer1.customer}</DefaultCell>,
     };
-    // console.log("TopCustomers: ", customerObject, tmpCustomersFavoriteProduct);
     tmpResponseObj.rows.push(tmpRow);
   }
   return tmpResponseObj;
 };
 
-export default formatTopCustomersChartData;
+export default formatTopProductsData;

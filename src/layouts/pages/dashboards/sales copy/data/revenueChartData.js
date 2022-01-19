@@ -13,9 +13,14 @@ Coded by www.creative-tim.com
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-function getMonthName(monthIndex) {
-  // An array containing the name of each month.
-  const months = [
+const formatRevenueChartData = (analyticsData) => {
+  console.log(analyticsData);
+  const monthlyData = analyticsData; // analyticsData.monthlySummary.currentYear.orders;
+  console.log(monthlyData);
+  const Year1PriorDate = new Date(Date.now());
+  Year1PriorDate.setFullYear(Year1PriorDate.getFullYear() - 1);
+
+  const monthNames = [
     "January",
     "February",
     "March",
@@ -29,46 +34,20 @@ function getMonthName(monthIndex) {
     "November",
     "December",
   ];
-  return months[monthIndex];
-}
-const formatRevenueChartData = (warehouseOrders) => {
-  console.log(warehouseOrders);
-  const monthlyData = warehouseOrders; // analyticsData.monthlySummary.currentYear.orders;
-  const CurrentDate = new Date(Date.now());
-  const LastMonthPriorDate = new Date(Date.now());
-  LastMonthPriorDate.setMonth(LastMonthPriorDate.getMonth() - 1);
-  const TwoMonthPriorDate = new Date(Date.now());
-  TwoMonthPriorDate.setMonth(TwoMonthPriorDate.getMonth() - 2);
-  const ThreeMonthPriorDate = new Date(Date.now());
-  // Year1PriorDate.setFullYear(Year1PriorDate.getFullYear() - 1);
-  ThreeMonthPriorDate.setMonth(ThreeMonthPriorDate.getMonth() - 3);
-
-  const monthNames = [
-    getMonthName(CurrentDate.getMonth()),
-    getMonthName(LastMonthPriorDate.getMonth()),
-    getMonthName(TwoMonthPriorDate.getMonth()),
-  ];
-
-  console.log(monthNames);
-
+  const tmpDateObj = new Date();
+  tmpDateObj.setDate(1);
   const responseLabels = [];
   const responseValues = [];
   Object.keys(monthNames).map((month) => {
-    console.log(month);
-    const currentMonthLabel = `${monthNames[month]} ${CurrentDate.getFullYear()}`;
+    const currentMonthLabel = `${monthNames[tmpDateObj.getMonth()]} ${tmpDateObj.getFullYear()}`;
     console.log(currentMonthLabel);
+    const MonthToSearch = tmpDateObj;
     const MonthOrdersArray = [];
     let MonthlyOrderTotal = 0;
 
-    // eslint-disable-next-line array-callback-return
     monthlyData.map((order) => {
       const orderMonth = new Date(order.createdDate).getMonth();
-      console.log(`Checking ${getMonthName(orderMonth)} - ${monthNames[month]}`);
-      if (
-        new Date(order.createdDate) >= ThreeMonthPriorDate &&
-        getMonthName(orderMonth) === monthNames[month]
-      ) {
-        console.log("FOUND MATCHING ORDER");
+      if (new Date(order.createdDate) >= MonthToSearch && orderMonth === tmpDateObj.getMonth()) {
         MonthOrdersArray.push(order);
         const tmpOrder = order;
         // console.log("TEMP ORDER");
@@ -83,12 +62,12 @@ const formatRevenueChartData = (warehouseOrders) => {
           }
           return OrderItem;
         });
-        return order;
       }
-      responseLabels.push(currentMonthLabel);
-      responseValues.push(MonthlyOrderTotal);
       return order;
     });
+    responseLabels.push(currentMonthLabel);
+    responseValues.push(MonthlyOrderTotal);
+    tmpDateObj.setMonth(tmpDateObj.getMonth() - 1);
     return month;
   });
 
