@@ -69,9 +69,9 @@ export default [
     [customerName.name]: Yup.string().required(customerName.errorMsg),
   }),
   Yup.object().shape({
-    [customerLocationName.name]: Yup.string().required(customerLocationName.errorMsg),
+    // [customerLocationName.name]: Yup.string().required(customerLocationName.errorMsg),
     [customerLocationID.name]: Yup.string().required(customerLocationID.errorMsg),
-    [destinationAddress1.name]: Yup.string().required(destinationAddress1.errorMsg),
+    // [destinationAddress1.name]: Yup.string().required(destinationAddress1.errorMsg),
     // [destinationCity.name]: Yup.string().required(destinationCity.errorMsg),
     // [destinationState.name]: Yup.string().required(destinationState.errorMsg),
     // [destinationZip.name]: Yup.string().required(destinationZip.errorMsg),

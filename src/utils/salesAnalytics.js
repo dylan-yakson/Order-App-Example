@@ -64,20 +64,17 @@ const pullOrderAnalyticsWithinTwoDates = (ordersJson, orderSearchStartDate, orde
         try {
           customerObj.TotalAmountPurchased += Number(TotalOrderAmount);
         } catch (error) {
+          console.log(error);
           customerObj.TotalAmountPurchased += 0;
         }
         customerObj.orderCount = customerObj.orderCount += 1;
-        customerObj.orders.push({
-          PO: order.PO,
-          createdDate: order.createdDate,
-        });
+        customerObj.orders.push(order);
         customersArrayToReturn.map((customer) => {
           if (customer.CustomerID === customerObj.CustomerID) {
             return customerObj;
           }
           return customer;
         });
-        // END CUSTOMER SNIPPET
       } else {
         const customerOrderItemProducts = [];
         let TotalOrderAmount = 0;
@@ -146,12 +143,6 @@ const pullOrderAnalyticsWithinTwoDates = (ordersJson, orderSearchStartDate, orde
             const tmpProduct = filteredProductDataList[0];
             tmpProduct.orderCount += 1;
             tmpProduct.totalAmountSpent += RealPriceAmount;
-            customerObj.products.map((product) => {
-              if (product.itemDesc === OrderItem.Description) {
-                return tmpProduct;
-              }
-              return product;
-            });
           } else {
             const customerOrderItemTmp = {
               orderCount: 1,

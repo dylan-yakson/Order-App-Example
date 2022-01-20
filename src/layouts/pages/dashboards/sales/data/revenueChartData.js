@@ -35,14 +35,19 @@ const formatRevenueChartData = (warehouseOrders) => {
   console.log(warehouseOrders);
   const monthlyData = warehouseOrders; // analyticsData.monthlySummary.currentYear.orders;
   const CurrentDate = new Date(Date.now());
+  CurrentDate.setDate(1);
   const LastMonthPriorDate = new Date(Date.now());
   LastMonthPriorDate.setMonth(LastMonthPriorDate.getMonth() - 1);
+
   const TwoMonthPriorDate = new Date(Date.now());
   TwoMonthPriorDate.setMonth(TwoMonthPriorDate.getMonth() - 2);
+  TwoMonthPriorDate.setDate(1);
+
   const ThreeMonthPriorDate = new Date(Date.now());
   // Year1PriorDate.setFullYear(Year1PriorDate.getFullYear() - 1);
   ThreeMonthPriorDate.setMonth(ThreeMonthPriorDate.getMonth() - 3);
-
+  const monthDates = [CurrentDate, LastMonthPriorDate, TwoMonthPriorDate];
+  console.log(monthDates);
   const monthNames = [
     getMonthName(CurrentDate.getMonth()),
     getMonthName(LastMonthPriorDate.getMonth()),
@@ -53,24 +58,22 @@ const formatRevenueChartData = (warehouseOrders) => {
 
   const responseLabels = [];
   const responseValues = [];
-  Object.keys(monthNames).map((month) => {
-    console.log(month);
-    const currentMonthLabel = `${monthNames[month]} ${CurrentDate.getFullYear()}`;
+  monthDates.map((date) => {
+    const currentMonthLabel = `${getMonthName(date.getMonth())} ${date.getFullYear()}`;
     console.log(currentMonthLabel);
     const MonthOrdersArray = [];
     let MonthlyOrderTotal = 0;
-
-    // eslint-disable-next-line array-callback-return
     monthlyData.map((order) => {
       const orderMonth = new Date(order.createdDate).getMonth();
-      console.log(`Checking ${getMonthName(orderMonth)} - ${monthNames[month]}`);
+      console.log(`Checking ${getMonthName(orderMonth)} - ${getMonthName(date.getMonth())}`);
       if (
-        new Date(order.createdDate) >= ThreeMonthPriorDate &&
-        getMonthName(orderMonth) === monthNames[month]
+        new Date(order.createdDate).getFullYear() === date.getFullYear() &&
+        getMonthName(orderMonth) === getMonthName(date.getMonth())
       ) {
         console.log("FOUND MATCHING ORDER");
         MonthOrdersArray.push(order);
         const tmpOrder = order;
+        console.log(tmpOrder);
         // console.log("TEMP ORDER");
         // console.log(tmpOrder);
         // eslint-disable-next-line no-restricted-syntax
@@ -79,18 +82,57 @@ const formatRevenueChartData = (warehouseOrders) => {
             const RealPriceAmount = Number(OrderItem.PricePerGal) * Number(OrderItem.Quantity);
             MonthlyOrderTotal += RealPriceAmount;
           } catch (Error) {
-            // console.log(Error);
+            console.log(Error);
           }
           return OrderItem;
         });
         return order;
       }
-      responseLabels.push(currentMonthLabel);
-      responseValues.push(MonthlyOrderTotal);
       return order;
     });
-    return month;
+    responseLabels.push(currentMonthLabel);
+    responseValues.push(MonthlyOrderTotal);
+    return date;
   });
+  // Object.keys(monthNames).map((month) => {
+  //   console.log(month);
+  //   const currentMonthLabel = `${monthNames[month]} ${monthDates[month].getFullYear()}`;
+  //   console.log(currentMonthLabel);
+  //   const MonthOrdersArray = [];
+  //   let MonthlyOrderTotal = 0;
+
+  //   // eslint-disable-next-line array-callback-return
+  //   monthlyData.map((order) => {
+  //     const orderMonth = new Date(order.createdDate).getMonth();
+  //     console.log(`Checking ${getMonthName(orderMonth)} - ${monthDates[month]}`);
+  //     if (
+  //       new Date(order.createdDate) >= ThreeMonthPriorDate &&
+  //       getMonthName(orderMonth) === monthNames[month]
+  //     ) {
+  //       console.log("FOUND MATCHING ORDER");
+  //       MonthOrdersArray.push(order);
+  //       const tmpOrder = order;
+  //       console.log(tmpOrder);
+  //       // console.log("TEMP ORDER");
+  //       // console.log(tmpOrder);
+  //       // eslint-disable-next-line no-restricted-syntax
+  //       tmpOrder.requestPayload.items.items.map((OrderItem) => {
+  //         try {
+  //           const RealPriceAmount = Number(OrderItem.PricePerGal) * Number(OrderItem.Quantity);
+  //           MonthlyOrderTotal += RealPriceAmount;
+  //         } catch (Error) {
+  //           console.log(Error);
+  //         }
+  //         return OrderItem;
+  //       });
+  //       return order;
+  //     }
+  //     responseLabels.push(currentMonthLabel);
+  //     responseValues.push(MonthlyOrderTotal);
+  //     return order;
+  //   });
+  //   return month;
+  // });
 
   console.log(responseLabels);
   console.log(responseValues);

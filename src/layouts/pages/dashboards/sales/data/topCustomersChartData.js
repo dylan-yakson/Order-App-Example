@@ -75,6 +75,7 @@ import nikeV22 from "assets/images/ecommerce/blue-shoe.jpeg";
 
 const formatTopCustomersChartData = (orderData) => {
   const { customers } = orderData;
+  console.log(customers);
   customers
     .sort((a, b) => {
       if (a.TotalAmountPurchased < b.TotalAmountPurchased) {

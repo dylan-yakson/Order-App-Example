@@ -110,6 +110,12 @@ const formatTopProductsData = (analyticsData) => {
         (product) => product.itemDesc === currentProduct.itemDesc
       );
       if (customerProducts && customerProducts[0]) {
+        customerProducts.sort((a, b) => {
+          if (a.totalAmountSpent < b.totalAmountSpent) {
+            return 1;
+          }
+          return -1;
+        });
         if (mostOrderedCustomer.orderQuantity < customerProducts[0].totalAmountSpent) {
           mostOrderedCustomer.orderQuantity = customerProducts[0].totalAmountSpent;
           mostOrderedCustomer.customer = customer.Customer;

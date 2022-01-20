@@ -43,7 +43,22 @@ const formatCustomerBreakdownData = (analyticsData) => {
     const customer = top6Customers[customerDataIndex];
     if (customer.Customer && customer.Customer.length > 0) {
       labels.push(customer.Customer.slice(0, 25));
-      customerOrderTotalData.push(customer.TotalAmountPurchased);
+      let customerOrderTotal = 0;
+      for (const orderIndex in customer.orders) {
+        const order = customer.orders[orderIndex];
+        const orderItems = order.requestPayload.items.items;
+        try {
+          for (const orderItemIndex in orderItems) {
+            const orderItem = orderItems[orderItemIndex];
+            const orderItemTotal = Number(orderItem.Quantity) * Number(orderItem.PricePerGal);
+            customerOrderTotal += orderItemTotal;
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      customerOrderTotalData.push(customerOrderTotal);
     }
   }
 

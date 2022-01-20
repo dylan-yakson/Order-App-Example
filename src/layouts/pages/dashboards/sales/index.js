@@ -271,6 +271,8 @@ function Sales() {
       TwoMonthPriorDate.setMonth(MonthPriorDate.getMonth() - 1);
 
       const currentDate = new Date(Date.now());
+      console.log(TwoMonthPriorDate);
+      console.log(MonthPriorDate);
       const orderSalesAnalytics = pullOrderAnalyticsWithinTwoDates(
         warehouseOrders,
         MonthPriorDate,
