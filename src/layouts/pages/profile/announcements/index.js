@@ -48,29 +48,30 @@ import { useMsal } from "@azure/msal-react";
 
 import TimelineList from "examples/Timeline/TimelineList";
 import TimelineItem from "examples/Timeline/TimelineItem";
-import timelineData from "layouts/pages/projects/timeline/data/timelineData";
+// import timelineData from "layouts/pages/projects/timeline/data/timelineData";
+
+import { pullAnnouncements, setViewedAnnouncements } from "utils/koapi";
 
 function Overview() {
   const { instance, accounts } = useMsal();
+  const [announcements, setAnnouncementData] = useState("");
 
   useEffect(() => {
     console.log(instance);
     console.log(accounts[0]);
+    // setAnnouncements(timelineData);
+    pullAnnouncements(accounts[0].username).then((notificationData) => {
+      console.log(notificationData);
+      if (notificationData && notificationData.announcements) {
+        const sortedAnnouncements = notificationData.announcements;
+        setAnnouncementData(sortedAnnouncements.reverse());
+      }
+    });
+    setViewedAnnouncements(accounts[0].username).then(() => {
+      console.log("updated announcments");
+    });
   }, []);
-  const renderTimelineItems = timelineData.map(
-    ({ color, icon, title, dateTime, description, badges, lastItem }) => (
-      <TimelineItem
-        key={title + color}
-        color={color}
-        icon={icon}
-        title={title}
-        dateTime={dateTime}
-        description={description}
-        badges={badges}
-        lastItem={lastItem}
-      />
-    )
-  );
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -113,7 +114,22 @@ function Overview() {
           </Grid>
           <Grid item xs={12} lg={6}>
             <TimelineList title="Announcements" dark>
-              {renderTimelineItems}
+              {announcements ? (
+                announcements.map(({ Title, createdDate, Body }) => (
+                  <TimelineItem
+                    key={`${Title}success`}
+                    color="success"
+                    icon="notifications"
+                    title={Title}
+                    dateTime={new Date(createdDate).toDateString()}
+                    description={Body}
+                    badges={["design"]}
+                    // lastItem={lastItem}
+                  />
+                ))
+              ) : (
+                <></>
+              )}
             </TimelineList>
           </Grid>
         </Grid>

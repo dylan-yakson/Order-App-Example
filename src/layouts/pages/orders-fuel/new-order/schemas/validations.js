@@ -85,7 +85,7 @@ export default [
           Description: Yup.string().min(2, "too short").required(orderItemDescription.errorMsg),
           ID: Yup.string().required(orderItemID.errorMsg),
           Package: Yup.string().required(orderItemPackage.errorMsg),
-          Price: Yup.number().moreThan(0).required(orderItemPrice.errorMsg),
+          Price: Yup.number().required(orderItemPrice.errorMsg),
           Quantity: Yup.number().required(orderItemQuantity.errorMsg),
         })
       )

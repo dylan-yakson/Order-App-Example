@@ -56,6 +56,7 @@ import {
   setOpenConfigurator,
 } from "context";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
+import { pullAnnouncements } from "utils/koapi";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const { instance, accounts } = useMsal();
@@ -64,6 +65,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
   const [openNotificationsMenu, setOpenNotificationsMenu] = useState(false);
   const [openAccountMenu, setOpenAccountMenu] = useState(false);
+  const [isPendingAnnouncements, setisPendingAnnouncements] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
@@ -94,6 +96,14 @@ function DashboardNavbar({ absolute, light, isMini }) {
     return () => window.removeEventListener("scroll", handleTransparentNavbar);
   }, [dispatch, fixedNavbar]);
 
+  useEffect(() => {
+    pullAnnouncements(accounts[0].username).then((notificationData) => {
+      console.log(notificationData);
+      if (notificationData && notificationData.announcements) {
+        setisPendingAnnouncements(!notificationData.isViewed);
+      }
+    });
+  }, []);
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenAccoountMenu = (event) => setOpenAccountMenu(event.currentTarget);
@@ -115,7 +125,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
       sx={{ mt: 2 }}
     >
       <Link to="/announcements">
-        <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
+        {isPendingAnnouncements ? (
+          <MDBadge badgeContent="*" color="error" size="xs" circular>
+            <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
+          </MDBadge>
+        ) : (
+          <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
+        )}
       </Link>
       <Link to="https://kppetro.freshservice.com/support/home">
         <NotificationItem icon={<Icon>podcasts</Icon>} title="Get Help from IT" />
@@ -137,9 +153,22 @@ function DashboardNavbar({ absolute, light, isMini }) {
       onClose={handleCloseAccountMenu}
       sx={{ mt: 2 }}
     >
-      <Link to="/announcements">
-        <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
-      </Link>
+      {isPendingAnnouncements ? (
+        <Link to="/announcements">
+          <NotificationItem
+            icon={
+              <MDBadge badgeContent="*" color="error" size="xs" circular>
+                <Icon>email</Icon>
+              </MDBadge>
+            }
+            title="Check new messages"
+          />
+        </Link>
+      ) : (
+        <Link to="/announcements">
+          <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
+        </Link>
+      )}
       <a target="_blank" href="https://kppetro.freshservice.com/support/home" rel="noreferrer">
         <NotificationItem icon={<Icon>podcasts</Icon>} title="Get Help from IT" />
       </a>
@@ -208,7 +237,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 variant="contained"
                 onClick={handleOpenAccoountMenu}
               >
-                <Icon sx={iconsStyle}>account_circle</Icon>
+                {isPendingAnnouncements ? (
+                  <MDBadge badgeContent="*" color="error" size="xs" circular>
+                    <Icon sx={iconsStyle}>account_circle</Icon>
+                  </MDBadge>
+                ) : (
+                  <Icon sx={iconsStyle}>account_circle</Icon>
+                )}
               </IconButton>
               {renderAccountMenu()}
               {/* <IconButton

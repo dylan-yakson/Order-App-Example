@@ -64,6 +64,7 @@ import {
   pullCustomerAddresses,
   convertOrderFormat,
   submitOrder,
+  updateQuote,
   updateOrder,
   convertToSchemaFormat,
 } from "utils/koapi";
@@ -81,7 +82,9 @@ function EditOrder({ OrderToEdit, onOrderCompletion, alertFunction }) {
   const [originalOrder, setoriginalOrder] = useState(null);
   const [stagedActions, setStagedActions] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [quoteOrOrder, setIsQuoteOrOrder] = useState(
+    OrderToEdit.requestPayload.sales.quoteType || "ORDER"
+  );
   const [stagedFormattedOrder, setStagedFormattedOrder] = useState({});
   const steps = getSteps();
   const { formId, formField } = form;
@@ -110,67 +113,131 @@ function EditOrder({ OrderToEdit, onOrderCompletion, alertFunction }) {
   const sendOrderForProcessing = () => {
     if (stagedActions) {
       setIsLoading(true);
-      updateOrder(stagedFormattedOrder, "warehouse", OrderToEdit.PO).then(
-        (orderSubmisionResponse) => {
-          console.log(orderSubmisionResponse);
-          if (orderSubmisionResponse.Error && orderSubmisionResponse.Error === "True") {
-            if (orderSubmisionResponse.Message) {
-              setOrderStatusAlert(
-                <MDAlert color="error">
-                  We had an issue...
-                  {orderSubmisionResponse.Message}
-                  <MDAlertCloseIcon
-                    onClick={() => {
-                      setOrderStatusAlert(null);
-                    }}
-                  >
-                    &times;
-                  </MDAlertCloseIcon>
-                </MDAlert>
-              );
+      if (quoteOrOrder && quoteOrOrder.toUpperCase() === "QUOTE") {
+        updateQuote(stagedFormattedOrder, "warehouse", OrderToEdit.PO).then(
+          (orderSubmisionResponse) => {
+            console.log(orderSubmisionResponse);
+            if (orderSubmisionResponse.Error && orderSubmisionResponse.Error === "True") {
+              if (orderSubmisionResponse.Message) {
+                setOrderStatusAlert(
+                  <MDAlert color="error">
+                    We had an issue...
+                    {orderSubmisionResponse.Message}
+                    <MDAlertCloseIcon
+                      onClick={() => {
+                        setOrderStatusAlert(null);
+                      }}
+                    >
+                      &times;
+                    </MDAlertCloseIcon>
+                  </MDAlert>
+                );
+              } else {
+                setOrderStatusAlert(
+                  <MDAlert color="error">
+                    Not sure what went wrong there.. Please try again in a few or contact IT if you
+                    still have issues.
+                    <MDAlertCloseIcon
+                      onClick={() => {
+                        setOrderStatusAlert(null);
+                      }}
+                    >
+                      &times;
+                    </MDAlertCloseIcon>
+                  </MDAlert>
+                );
+              }
             } else {
-              setOrderStatusAlert(
-                <MDAlert color="error">
-                  Not sure what went wrong there.. Please try again in a few or contact IT if you
-                  still have issues.
-                  <MDAlertCloseIcon
-                    onClick={() => {
-                      setOrderStatusAlert(null);
-                    }}
-                  >
-                    &times;
-                  </MDAlertCloseIcon>
-                </MDAlert>
-              );
+              stagedActions.setSubmitting(false);
+              stagedActions.resetForm();
+              stagedActions.setFieldValue("orderItems", []);
+              setActiveStep(0);
+              setDialogOpen(false);
+              setIsLoading(false);
+              try {
+                alertFunction(
+                  <MDAlert color="success">
+                    Order {orderSubmisionResponse.PO} Edited Successfully
+                    <MDAlertCloseIcon
+                      onClick={() => {
+                        alertFunction(null);
+                      }}
+                    >
+                      &times;
+                    </MDAlertCloseIcon>
+                  </MDAlert>
+                );
+              } catch (Error) {
+                console.log("Error changing status");
+                console.log(Error);
+              }
+              setOrderInProgress(false);
             }
-          } else {
-            stagedActions.setSubmitting(false);
-            stagedActions.resetForm();
-            stagedActions.setFieldValue("orderItems", []);
-            setActiveStep(0);
-            setDialogOpen(false);
-            setIsLoading(false);
-            try {
-              alertFunction(
-                <MDAlert color="success">
-                  Order {orderSubmisionResponse.PO} Edited Successfully
-                  <MDAlertCloseIcon
-                    onClick={() => {
-                      alertFunction(null);
-                    }}
-                  >
-                    &times;
-                  </MDAlertCloseIcon>
-                </MDAlert>
-              );
-            } catch (Error) {
-              console.log("Error changing status");
-              console.log(Error);
-            }
-            setOrderInProgress(false);
           }
-        }
-      );
+        );
+      } else {
+        updateOrder(stagedFormattedOrder, "warehouse", OrderToEdit.PO).then(
+          (orderSubmisionResponse) => {
+            console.log(orderSubmisionResponse);
+            if (orderSubmisionResponse.Error && orderSubmisionResponse.Error === "True") {
+              if (orderSubmisionResponse.Message) {
+                setOrderStatusAlert(
+                  <MDAlert color="error">
+                    We had an issue...
+                    {orderSubmisionResponse.Message}
+                    <MDAlertCloseIcon
+                      onClick={() => {
+                        setOrderStatusAlert(null);
+                      }}
+                    >
+                      &times;
+                    </MDAlertCloseIcon>
+                  </MDAlert>
+                );
+              } else {
+                setOrderStatusAlert(
+                  <MDAlert color="error">
+                    Not sure what went wrong there.. Please try again in a few or contact IT if you
+                    still have issues.
+                    <MDAlertCloseIcon
+                      onClick={() => {
+                        setOrderStatusAlert(null);
+                      }}
+                    >
+                      &times;
+                    </MDAlertCloseIcon>
+                  </MDAlert>
+                );
+              }
+            } else {
+              stagedActions.setSubmitting(false);
+              stagedActions.resetForm();
+              stagedActions.setFieldValue("orderItems", []);
+              setActiveStep(0);
+              setDialogOpen(false);
+              setIsLoading(false);
+              try {
+                alertFunction(
+                  <MDAlert color="success">
+                    Order {orderSubmisionResponse.PO} Edited Successfully
+                    <MDAlertCloseIcon
+                      onClick={() => {
+                        alertFunction(null);
+                      }}
+                    >
+                      &times;
+                    </MDAlertCloseIcon>
+                  </MDAlert>
+                );
+              } catch (Error) {
+                console.log("Error changing status");
+                console.log(Error);
+              }
+              setOrderInProgress(false);
+            }
+          }
+        );
+      }
     }
   };
   const submitForm = async (values, actions) => {

@@ -100,6 +100,8 @@ function ProductInfo({ formData }) {
         Quantity: selectedQuantity,
         Price: selectedPrice,
       };
+      console.log("orderItemsV");
+      console.log(orderItemsV);
       // eslint-disable-next-line prefer-const
       if (orderItemsV) {
         delete orderItemsV.EditBtn;
@@ -109,7 +111,9 @@ function ProductInfo({ formData }) {
         clearStates();
       } else {
         delete orderItemObj.EditBtn;
-        setFieldValue("orderItems", [orderItemObj]);
+        const newItemArray = [];
+        newItemArray.push(orderItemObj);
+        setFieldValue("orderItems", newItemArray);
         clearStates();
       }
 

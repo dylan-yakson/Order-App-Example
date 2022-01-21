@@ -161,6 +161,49 @@ const pullAllOrders = (userEmail) => {
       return error;
     });
 };
+
+const setViewedAnnouncements = (userEmail) => {
+  const config = {
+    method: "get",
+    url: "https://kp01-01.com:1880/api/viewedAnnouncements",
+    headers: {
+      apikey: process.env.REACT_APP_NODE_KEY,
+      email: userEmail,
+    },
+  };
+
+  return axios(config)
+    .then((response) => {
+      // console.log(JSON.stringify(response.data));
+      const orders = response.data;
+      return orders;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error;
+    });
+};
+const pullAnnouncements = (userEmail) => {
+  const config = {
+    method: "get",
+    url: "https://kp01-01.com:1880/api/pullAnnouncements",
+    headers: {
+      apikey: process.env.REACT_APP_NODE_KEY,
+      email: userEmail,
+    },
+  };
+
+  return axios(config)
+    .then((response) => {
+      // console.log(JSON.stringify(response.data));
+      const orders = response.data;
+      return orders;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error;
+    });
+};
 const pullWarehouseOrders = (userEmail) => {
   const config = {
     method: "get",
@@ -487,6 +530,29 @@ const updateOrder = (order, orderType, orderNumber) => {
       return error;
     });
 };
+const updateQuote = (order, orderType, orderNumber) => {
+  const orderSubmitConfig = {
+    method: "post",
+    url: "https://kp01-01.com:1880/api/editQuote",
+    headers: {
+      apikey: process.env.REACT_APP_NODE_KEY,
+      ordertype: orderType || "warehouse",
+      ordernumber: orderNumber,
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify(order),
+  };
+
+  return axios(orderSubmitConfig)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+      return response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      return error;
+    });
+};
 const convertOrderFormat = (initialOrder) => {
   console.log("CONVERTING ORDER FORMAT");
   console.log(initialOrder);
@@ -626,4 +692,7 @@ export {
   pullSiteToSiteOrders,
   submitSiteToSiteOrder,
   sendCustomerAddressRequestEmail,
+  updateQuote,
+  pullAnnouncements,
+  setViewedAnnouncements,
 };
