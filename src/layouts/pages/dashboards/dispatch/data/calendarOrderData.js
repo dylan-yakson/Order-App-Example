@@ -94,6 +94,8 @@ const formatCalendarEventData = (analyticsData) => {
     const customer = customerData[customerIndex];
     const customersOrders = customerData.orders;
     // console.log(customer);
+    customer.orders.sort((a, b) => a.deliveryDate > b.deliveryDate);
+
     for (const customerOrderIndex in customer.orders) {
       const orderObj = customer.orders[customerOrderIndex];
       console.log(orderObj);
@@ -114,6 +116,12 @@ const formatCalendarEventData = (analyticsData) => {
       // });
     }
   }
+  responseObj.sort((a, b) => {
+    if (new Date(a.start) > new Date(b.start)) {
+      return 1;
+    }
+    return -1;
+  });
   console.log(responseObj);
   return responseObj;
 

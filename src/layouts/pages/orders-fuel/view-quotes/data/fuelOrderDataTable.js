@@ -26,7 +26,8 @@ const generateDataTableFromOrders = (
   orders,
   updateFunction,
   reviewOrderFunction,
-  emailFunction
+  emailFunction,
+  convertToOrderFunction
 ) => {
   orders.sort((a, b) => {
     if (a.createdDate < b.createdDate) {
@@ -49,6 +50,8 @@ const generateDataTableFromOrders = (
   const globalUpdateFunction = updateFunction;
   const globalEmailFunction = emailFunction;
   const globalReviewFunction = reviewOrderFunction;
+  const globalConvertToOrderFunction = convertToOrderFunction;
+
   console.log(FormattedOrders);
   const ReturnedTableData = {
     columns: [
@@ -61,6 +64,7 @@ const generateDataTableFromOrders = (
             updateFunction={globalUpdateFunction}
             emailFunction={globalEmailFunction}
             reviewFunction={globalReviewFunction}
+            convertFunction={globalConvertToOrderFunction}
             ordersList={orders}
           />
         ),

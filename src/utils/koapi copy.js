@@ -3,7 +3,7 @@ import axios from "axios";
 const pullProducts = () => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/getProducts",
+    url: "https://kp01-01.com:1880/api/getProducts",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       "Access-Control-Allow-Origin": "http://localhost:3000",
@@ -25,7 +25,7 @@ const pullProducts = () => {
 const pullProductPackages = (productId) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/getProductPackages",
+    url: "https://kp01-01.com:1880/api/getProductPackages",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       id: productId,
@@ -47,7 +47,7 @@ const pullProductPackages = (productId) => {
 const pullPreviousPrices = (userEmail, productId, productPackage = "") => {
   const config = {
     method: "post",
-    url: "https://www.katalystintegrations.net:1880/api/getProductPreviousPrices",
+    url: "https://kp01-01.com:1880/api/getProductPreviousPrices",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -71,7 +71,7 @@ const sendCustomerAddressRequestEmail = (userEmail, Address) => {
   console.log(Address);
   const config = {
     method: "post",
-    url: "https://www.katalystintegrations.net:1880/api/sendCustomerAddressCreationEmail",
+    url: "https://kp01-01.com:1880/api/sendCustomerAddressCreationEmail",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -93,7 +93,7 @@ const sendCustomerAddressRequestEmail = (userEmail, Address) => {
 const sendQuoteConfirmationEmail = (userEmail, externalEmail, orderType, orderNumber) => {
   const config = {
     method: "post",
-    url: "https://www.katalystintegrations.net:1880/api/resendQuoteEmail",
+    url: "https://kp01-01.com:1880/api/resendQuoteEmail",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -118,7 +118,7 @@ const sendQuoteConfirmationEmail = (userEmail, externalEmail, orderType, orderNu
 const sendOrderConfirmationEmail = (userEmail, externalEmail, orderType, orderNumber) => {
   const config = {
     method: "post",
-    url: "https://www.katalystintegrations.net:1880/api/resendOrderEmail",
+    url: "https://kp01-01.com:1880/api/resendOrderEmail",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -143,7 +143,7 @@ const sendOrderConfirmationEmail = (userEmail, externalEmail, orderType, orderNu
 const pullAllOrders = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/pullAllOrders",
+    url: "https://kp01-01.com:1880/api/pullAllOrders",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -165,7 +165,7 @@ const pullAllOrders = (userEmail) => {
 const setViewedAnnouncements = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/viewedAnnouncements",
+    url: "https://kp01-01.com:1880/api/viewedAnnouncements",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -186,7 +186,7 @@ const setViewedAnnouncements = (userEmail) => {
 const pullAnnouncements = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/pullAnnouncements",
+    url: "https://kp01-01.com:1880/api/pullAnnouncements",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -207,7 +207,7 @@ const pullAnnouncements = (userEmail) => {
 const pullWarehouseOrders = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/pullOrders",
+    url: "https://kp01-01.com:1880/api/pullOrders",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -229,7 +229,7 @@ const pullWarehouseOrders = (userEmail) => {
 const pullSiteToSiteOrders = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/pullSiteToSiteOrders",
+    url: "https://kp01-01.com:1880/api/pullSiteToSiteOrders",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -251,7 +251,7 @@ const pullSiteToSiteOrders = (userEmail) => {
 const pullWarehouseQuotes = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/pullQuotes",
+    url: "https://kp01-01.com:1880/api/pullQuotes",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -272,7 +272,7 @@ const pullWarehouseQuotes = (userEmail) => {
 const pullFuelOrders = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/pullFuelOrders",
+    url: "https://kp01-01.com:1880/api/pullFuelOrders",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -293,7 +293,7 @@ const pullFuelOrders = (userEmail) => {
 const pullFuelQuotes = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/pullFuelQuotes",
+    url: "https://kp01-01.com:1880/api/pullFuelQuotes",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -314,7 +314,7 @@ const pullFuelQuotes = (userEmail) => {
 const pullMonthlySalesAnalytics = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/orderapp/salesCustomersAnalytics",
+    url: "https://kp01-01.com:1880/api/orderapp/salesCustomersAnalytics",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -336,7 +336,7 @@ const pullMonthlySalesAnalytics = (userEmail) => {
 const pullMonthlySalesAnalyticsFuel = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/orderapp/salesCustomersAnalyticsFuel",
+    url: "https://kp01-01.com:1880/api/orderapp/salesCustomersAnalyticsFuel",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -359,7 +359,7 @@ const pullMonthlySalesAnalyticsFuel = (userEmail) => {
 const pullWarehouseDispatchOrders = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/orderapp/pullWarehouseOrdersBySalesman",
+    url: "https://kp01-01.com:1880/api/orderapp/pullWarehouseOrdersBySalesman",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -381,7 +381,7 @@ const pullWarehouseDispatchOrders = (userEmail) => {
 const pullOrderStatus = (userEmail) => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/pullOrdersStatusByEmail",
+    url: "https://kp01-01.com:1880/api/pullOrdersStatusByEmail",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       email: userEmail,
@@ -404,7 +404,7 @@ const pullOrderStatus = (userEmail) => {
 const pullCustomerAddresses = () => {
   const config = {
     method: "get",
-    url: "https://www.katalystintegrations.net:1880/api/getCustomerAddresses",
+    url: "https://kp01-01.com:1880/api/getCustomerAddresses",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
     },
@@ -443,7 +443,7 @@ const pullOriginWarehouses = () => {
 const submitOrder = (order, orderType) => {
   const orderSubmitConfig = {
     method: "post",
-    url: "https://www.katalystintegrations.net:1880/api/submitOrder",
+    url: "https://kp01-01.com:1880/api/submitOrder",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       orderType: orderType || "warehouse",
@@ -465,7 +465,7 @@ const submitOrder = (order, orderType) => {
 const submitSiteToSiteOrder = (order, orderType) => {
   const orderSubmitConfig = {
     method: "post",
-    url: "https://www.katalystintegrations.net:1880/api/submitSiteToSiteOrder",
+    url: "https://kp01-01.com:1880/api/submitSiteToSiteOrder",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       orderType: orderType || "warehouse",
@@ -488,7 +488,7 @@ const submitSiteToSiteOrder = (order, orderType) => {
 const submitQuote = (order, orderType) => {
   const orderSubmitConfig = {
     method: "post",
-    url: "https://www.katalystintegrations.net:1880/api/submitQuote",
+    url: "https://kp01-01.com:1880/api/submitQuote",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       orderType: orderType || "warehouse",
@@ -510,7 +510,7 @@ const submitQuote = (order, orderType) => {
 const updateOrder = (order, orderType, orderNumber) => {
   const orderSubmitConfig = {
     method: "post",
-    url: "https://www.katalystintegrations.net:1880/api/editOrder",
+    url: "https://kp01-01.com:1880/api/editOrder",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       ordertype: orderType || "warehouse",
@@ -533,7 +533,7 @@ const updateOrder = (order, orderType, orderNumber) => {
 const updateQuote = (order, orderType, orderNumber) => {
   const orderSubmitConfig = {
     method: "post",
-    url: "https://www.katalystintegrations.net:1880/api/editQuote",
+    url: "https://kp01-01.com:1880/api/editQuote",
     headers: {
       apikey: process.env.REACT_APP_NODE_KEY,
       ordertype: orderType || "warehouse",

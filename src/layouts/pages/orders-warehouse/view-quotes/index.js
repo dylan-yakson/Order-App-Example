@@ -51,6 +51,7 @@ import {
   pullPreviousPrices,
   pullProductPackages,
   pullProducts,
+  updateQuote,
   pullWarehouseDispatchOrders,
   pullOrderStatus,
   sendQuoteConfirmationEmail,
@@ -66,17 +67,95 @@ function OrderList() {
   const [dispatchedOrders, setDispatchedOrders] = useState(null);
   const [orderStatuses, setOrderStatuses] = useState(null);
   const [selectedOrderToEdit, setSelectedOrderToEdit] = useState(null);
+  const [selectedQuoteToSubmit, setselectedQuoteToSubmit] = useState(null);
   const [selectedOrderToReview, setSelectedOrderToReview] = useState(null);
   const [isEditingOrder, setisEditingOrder] = useState(null);
   const [isReviewingOrder, setisReviewingOrder] = useState(null);
   const [isActiveResendEmailAlert, setResendEmailAlert] = useState(null);
   const [emailToSendTo, setEmailToResendSendTo] = useState(null);
   const [orderToEmail, setorderToEmail] = useState(null);
+  const [IsConvertQuoteToOrder, setIsConvertQuoteToOrder] = useState(null);
   // const { instance, accounts } = useMsal();
 
   const openMenu = (event) => setMenu(event.currentTarget);
   const closeMenu = () => setMenu(null);
 
+  const submitQuoteToOrder = (order) => {
+    const selectedQuote = selectedQuoteToSubmit;
+    setIsLoading(true);
+    console.log(`Converting Quote to Order ${selectedQuote.PO}`);
+    console.log(selectedQuote);
+    selectedQuote.requestPayload.sales.quoteType = "Order";
+    updateQuote(selectedQuote.requestPayload, "warehouse", selectedQuote.PO).then(
+      (orderSubmisionResponse) => {
+        console.log(orderSubmisionResponse);
+        if (orderSubmisionResponse.Error && orderSubmisionResponse.Error === "True") {
+          if (orderSubmisionResponse.Message) {
+            setIsLoading(false);
+            setOrderStatusAlert(
+              <MDAlert color="error">
+                We had an issue...
+                {orderSubmisionResponse.Message}
+                <MDAlertCloseIcon
+                  onClick={() => {
+                    setOrderStatusAlert(null);
+                    setIsConvertQuoteToOrder(false);
+                  }}
+                >
+                  &times;
+                </MDAlertCloseIcon>
+              </MDAlert>
+            );
+          } else {
+            setIsLoading(false);
+            setOrderStatusAlert(
+              <MDAlert color="error">
+                Not sure what went wrong there.. Please try again in a few or contact IT if you
+                still have issues.
+                <MDAlertCloseIcon
+                  onClick={() => {
+                    setOrderStatusAlert(null);
+                    setIsConvertQuoteToOrder(false);
+                  }}
+                >
+                  &times;
+                </MDAlertCloseIcon>
+              </MDAlert>
+            );
+          }
+        } else {
+          setIsLoading(false);
+          try {
+            setOrderStatusAlert(
+              <MDAlert color="success">
+                Order {orderSubmisionResponse.PO} Edited Successfully
+                <MDAlertCloseIcon
+                  onClick={() => {
+                    setOrderStatusAlert(null);
+                    setIsConvertQuoteToOrder(false);
+                  }}
+                >
+                  &times;
+                </MDAlertCloseIcon>
+              </MDAlert>
+            );
+          } catch (Error) {
+            console.log("Error changing status");
+            console.log(Error);
+          }
+          setIsConvertQuoteToOrder(false);
+        }
+      }
+    );
+  };
+  const convertQuoteToOrder = (order) => {
+    // eslint-disable-next-line no-alert
+    console.log(`Updating order ${order.PO}`);
+    console.log(order);
+    // eslint-disable-next-line no-underscore-dangle
+    setselectedQuoteToSubmit(order);
+    setIsConvertQuoteToOrder(true);
+  };
   const updateOrderFunction = (order) => {
     // eslint-disable-next-line no-alert
     console.log(`Updating order ${order.PO}`);
@@ -188,7 +267,8 @@ function OrderList() {
           orders,
           updateOrderFunction,
           reviewOrderFunction,
-          resendEmailOrderFunction
+          resendEmailOrderFunction,
+          convertQuoteToOrder
         );
         setOrderData(tableData);
         setIsLoading(false);
@@ -217,7 +297,8 @@ function OrderList() {
           orders,
           updateOrderFunction,
           reviewOrderFunction,
-          resendEmailOrderFunction
+          resendEmailOrderFunction,
+          convertQuoteToOrder
         );
         setOrderData(tableData);
         setIsLoading(false);
@@ -333,6 +414,54 @@ function OrderList() {
             OrderData={selectedOrderToReview.requestPayload}
             po={selectedOrderToReview.PO}
             orderDate={selectedOrderToReview.createdDate}
+          />
+        </MDBox>
+      </DashboardLayout>
+    );
+  }
+  if (IsConvertQuoteToOrder) {
+    return (
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox>
+          <Grid
+            container
+            spacing={3}
+            align="center"
+            justify="center"
+            justifyContent="center"
+            alignItems="center"
+            margin="30px"
+          >
+            <Grid item xs={12}>
+              Are you sure you want to convert this quote to an order?
+            </Grid>
+            <Grid item xs={12}>
+              <MDButton
+                variant="outlined"
+                color="dark"
+                onClick={() => {
+                  setisReviewingOrder(false);
+                  setselectedQuoteToSubmit(false);
+                  setResendEmailAlert(false);
+                  setselectedQuoteToSubmit(null);
+                }}
+              >
+                <Link to="/orders/order-list-warehouse">Back</Link>
+              </MDButton>
+            </Grid>
+            <Grid item xs={12}>
+              <MDButton center color="success" variant="contained" onClick={submitQuoteToOrder}>
+                Submit
+              </MDButton>
+            </Grid>
+          </Grid>
+        </MDBox>
+        <MDBox>
+          <Invoice
+            OrderData={selectedQuoteToSubmit.requestPayload}
+            po={selectedQuoteToSubmit.PO}
+            orderDate={selectedQuoteToSubmit.createdDate}
           />
         </MDBox>
       </DashboardLayout>

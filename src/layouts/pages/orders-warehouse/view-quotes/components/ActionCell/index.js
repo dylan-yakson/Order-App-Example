@@ -25,7 +25,14 @@ import MenuItem from "@mui/material/MenuItem";
 import Icon from "@mui/material/Icon";
 import Divider from "@mui/material/Divider";
 
-function ActionCell({ value, emailFunction, updateFunction, reviewFunction, ordersList }) {
+function ActionCell({
+  value,
+  emailFunction,
+  updateFunction,
+  reviewFunction,
+  convertFunction,
+  ordersList,
+}) {
   const [menu, setMenu] = useState(null);
   const openMenu = (event) => setMenu(event.currentTarget);
   const closeMenu = () => setMenu(null);
@@ -52,6 +59,7 @@ function ActionCell({ value, emailFunction, updateFunction, reviewFunction, orde
       <MenuItem onClick={() => updateFunction(findOrderFromID(value))}>Update</MenuItem>
       <MenuItem onClick={() => reviewFunction(findOrderFromID(value))}>Review</MenuItem>
       <MenuItem onClick={() => emailFunction(findOrderFromID(value))}>Re-Send Email</MenuItem>
+      <MenuItem onClick={() => convertFunction(findOrderFromID(value))}>Convert to Order</MenuItem>
       <MenuItem onClick={() => handleUpdate(findOrderFromID(value))}>Cancel</MenuItem>
       <Divider sx={{ margin: "0.5rem 0" }} />
     </Menu>
@@ -80,6 +88,7 @@ ActionCell.propTypes = {
   updateFunction: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
   ordersList: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
   reviewFunction: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
+  convertFunction: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
 };
 
 export default ActionCell;
