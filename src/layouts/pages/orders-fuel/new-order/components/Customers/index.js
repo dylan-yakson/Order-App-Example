@@ -42,6 +42,7 @@ import { useField, Field, Form, Formik, FormikProps, ErrorMessage } from "formik
 
 function CustomerInfo({ formData, customerAddresses }) {
   const { accounts } = useMsal();
+  const [CustomerStatusAlert, setCustomerStatusAlert] = useState(null);
 
   const { formField, values, errors, touched, setFieldValue } = formData;
   const { customerName } = formField;
@@ -79,16 +80,23 @@ function CustomerInfo({ formData, customerAddresses }) {
                 )[0];
                 if (val && customerSelected) {
                   console.log(val);
-                  console.log(customerSelected);
-                  console.log("CHANGING NAME");
-                  setFieldValue("customerName", customerSelected.name);
-                  setFieldValue("customerId", customerSelected.customerID);
+                  if (
+                    customerSelected.CreditStatus &&
+                    customerSelected.CreditStatus.toLowerCase().includes("hold")
+                  ) {
+                    setCustomerStatusAlert("Customer has exceeded their credit hold");
+                  } else {
+                    console.log("CHANGING NAME");
+                    setFieldValue("customerName", customerSelected.name);
+                    setFieldValue("customerId", customerSelected.customerID);
+                  }
                 }
               }}
               value={customerNameV}
             />
             <MDTypography component="div" variant="caption" color="error" fontWeight="regular">
               <ErrorMessage name={customerName.name} />
+              {CustomerStatusAlert}
             </MDTypography>
           </Grid>
         </Grid>
