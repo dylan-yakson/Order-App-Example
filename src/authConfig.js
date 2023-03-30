@@ -12,8 +12,8 @@ import { LogLevel } from "@azure/msal-browser";
  */
 export const msalConfig = {
   auth: {
-    clientId: "6847f256-2b69-4182-ac55-deff2a8af575",
-    authority: "https://login.microsoftonline.com/999edda2-83f9-4365-b4b3-24a55c5328af",
+    clientId: "SAML_CLIENT_ID",
+    authority: "https://login.microsoftonline.com/app-id",
     // TODO: Change redirectUri to come from environment variable
     redirectUri:
       process.env.NODE_ENV === "production" ? process.env.PROD_URI : "http://localhost:3000",
